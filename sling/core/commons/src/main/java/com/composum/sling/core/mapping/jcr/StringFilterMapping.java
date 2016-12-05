@@ -50,7 +50,7 @@ public class StringFilterMapping {
             String values = matcher.group(2);
             try {
                 StringFilter.FilterSet.Rule rule = StringFilter.FilterSet.Rule.valueOf(type);
-                List<StringFilter> filters = new ArrayList<>();
+                List<StringFilter> filters = new ArrayList<StringFilter>();
                 String nextRule = "";
                 for (String item : StringUtils.split(values, ',')) {
                     nextRule += item;
@@ -77,7 +77,7 @@ public class StringFilterMapping {
                 String values = matcher.group(3);
                 try {
                     StringFilter.FilterSet.Rule rule = StringFilter.FilterSet.Rule.valueOf(type);
-                    List<StringFilter> filters = new ArrayList<>();
+                    List<StringFilter> filters = new ArrayList<StringFilter>();
                     String nextRule = "";
                     for (String item : StringUtils.split(values, ',')) {
                         nextRule += item;
@@ -137,7 +137,7 @@ public class StringFilterMapping {
     protected static final Map<Class<? extends StringFilter>, MappingStrategy> STRATEGY_MAP;
 
     static {
-        STRATEGY_MAP = new HashMap<>();
+        STRATEGY_MAP = new HashMap<Class<? extends StringFilter>, MappingStrategy>();
         STRATEGY_MAP.put(StringFilter.FilterSet.class, new FilterSetStrategy());
         STRATEGY_MAP.put(StringFilter.WhiteList.class, new PatternFilterStrategy());
         STRATEGY_MAP.put(StringFilter.BlackList.class, new PatternFilterStrategy());
@@ -195,7 +195,7 @@ public class StringFilterMapping {
                                               Class<? extends StringFilter> type)
                 throws Exception {
             String[] patternStrings = resource.getProperty(PROPERTY_PATTERNS, String[].class);
-            List<Pattern> patterns = new ArrayList<>();
+            List<Pattern> patterns = new ArrayList<Pattern>();
             for (String pattern : patternStrings) {
                 patterns.add(Pattern.compile(pattern));
             }
@@ -208,7 +208,7 @@ public class StringFilterMapping {
             super.toResource(resource, filter);
             ResourceHandle handle = ResourceHandle.use(resource);
             List<Pattern> patternList = ((StringFilter.PatternList) filter).getPatterns();
-            List<String> valueList = new ArrayList<>();
+            List<String> valueList = new ArrayList<String>();
             for (Pattern pattern : patternList) {
                 valueList.add(pattern.pattern());
             }
@@ -225,7 +225,7 @@ public class StringFilterMapping {
             StringFilter.FilterSet.Rule rule = StringFilter.FilterSet.Rule.valueOf(
                     resource.getProperty(PROPERTY_RULE, (String) null));
             List<ResourceHandle> filterResources = resource.getChildrenByResourceType(STRING_FILTER_TYPE);
-            List<StringFilter> filterList = new ArrayList<>();
+            List<StringFilter> filterList = new ArrayList<StringFilter>();
             for (ResourceHandle filterRes : filterResources) {
                 StringFilter filter = StringFilterMapping.fromResource(filterRes);
                 filterList.add(filter);

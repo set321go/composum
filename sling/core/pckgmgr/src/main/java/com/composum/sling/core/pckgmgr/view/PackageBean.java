@@ -267,7 +267,7 @@ public class PackageBean extends ConsoleSlingBean {
             } catch (RepositoryException rex) {
                 LOG.error(rex.getMessage(), rex);
             }
-            filterList = new ArrayList<>();
+            filterList = new ArrayList<PathFilterSet>();
         }
         return filterList;
     }

@@ -68,11 +68,17 @@ public class YUICssProcessor implements CssProcessor {
                 context.execute(new Runnable() {
                     @Override
                     public void run() {
-                        try (OutputStreamWriter writer = new OutputStreamWriter(outputStream);
-                             InputStreamReader sourceReader = new InputStreamReader(source, DEFAULT_CHARSET)) {
-                            final CssCompressor compressor = new CssCompressor(sourceReader);
-                            compressor.compress(writer, clientlibConfig.getCssLineBreak());
-                            writer.flush();
+                        try {
+                            OutputStreamWriter writer = new OutputStreamWriter(outputStream);
+                            InputStreamReader sourceReader = new InputStreamReader(source, DEFAULT_CHARSET);
+                            try {
+                                final CssCompressor compressor = new CssCompressor(sourceReader);
+                                compressor.compress(writer, clientlibConfig.getCssLineBreak());
+                                writer.flush();
+                            } finally {
+                                writer.close();
+                                sourceReader.close();
+                            }
                         } catch (IOException ex) {
                             LOG.error(ex.getMessage(), ex);
                         }

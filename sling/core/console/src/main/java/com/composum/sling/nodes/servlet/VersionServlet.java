@@ -53,7 +53,7 @@ public class VersionServlet extends AbstractServiceServlet {
 
     public enum Operation {checkout, checkin, addlabel, deletelabel, versions, labels, version, restore, configuration, checkpoint, activity}
 
-    protected ServletOperationSet<Extension, Operation> operations = new ServletOperationSet<>(Extension.json);
+    protected ServletOperationSet<Extension, Operation> operations = new ServletOperationSet<Extension, Operation>(Extension.json);
 
     @Reference
     private NodesConfiguration coreConfig;
@@ -93,7 +93,7 @@ public class VersionServlet extends AbstractServiceServlet {
     static class VersionEntry {
         String versionName;
         String date;
-        List<String> labels = new ArrayList<>();
+        List<String> labels = new ArrayList<String>();
         VersionEntry(String versionName, String date) {
             this.versionName = versionName;
             this.date = date;
@@ -265,7 +265,8 @@ public class VersionServlet extends AbstractServiceServlet {
                         final String[] versionLabels = versionHistory.getVersionLabels();
                         final RequestParameter labelParam = request.getRequestParameter("label");
                         final String label = labelParam == null ? "" : labelParam.getString();
-                        try (final JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response)) {
+                        final JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
+                        try {
                             jsonWriter.beginArray();
                             for (final String e : versionLabels) {
                                 if (e.startsWith(label)) {
@@ -273,6 +274,8 @@ public class VersionServlet extends AbstractServiceServlet {
                                 }
                             }
                             jsonWriter.endArray();
+                        } finally {
+                            jsonWriter.close();
                         }
                     }
                 }
@@ -303,7 +306,7 @@ public class VersionServlet extends AbstractServiceServlet {
                         final VersionHistory versionHistory = versionManager.getVersionHistory(path);
                         final String currentVersion = versionManager.getBaseVersion(path).getName();
                         final VersionIterator allVersions = versionHistory.getAllVersions();
-                        final List<VersionEntry> entries = new ArrayList<>();
+                        final List<VersionEntry> entries = new ArrayList<VersionEntry>();
                         while (allVersions.hasNext()) {
                             final Version version = allVersions.nextVersion();
                             final Calendar cal = version.getCreated();
@@ -314,7 +317,8 @@ public class VersionServlet extends AbstractServiceServlet {
                             versionEntry.labels.addAll(Arrays.asList(versionHistory.getVersionLabels(version)));
                             entries.add(versionEntry);
                         }
-                        try (final JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response)) {
+                        final JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
+                        try {
                             jsonWriter.beginArray();
                             for (final VersionEntry e : entries) {
                                 jsonWriter.beginObject();
@@ -329,6 +333,8 @@ public class VersionServlet extends AbstractServiceServlet {
                                 jsonWriter.endObject();
                             }
                             jsonWriter.endArray();
+                        } finally {
+                            jsonWriter.close();
                         }
                     }
                 }

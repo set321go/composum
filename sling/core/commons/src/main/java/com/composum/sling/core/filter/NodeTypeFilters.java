@@ -61,7 +61,7 @@ public class NodeTypeFilters {
     public static Map<String, NodeTypeFilter> TYPE_FILTER_SET;
 
     static {
-        TYPE_FILTER_SET = new HashMap<>();
+        TYPE_FILTER_SET = new HashMap<String, NodeTypeFilter>();
         TYPE_FILTER_SET.put(TYPE_ORDERABLE, new OrderableTypeFilter());
     }
 

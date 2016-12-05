@@ -52,7 +52,7 @@ public class GroovyRunner {
     protected QueryManager queryManager;
     protected PrintWriter out;
 
-    protected Map<String, Object> generalBindings = new HashMap<>();
+    protected Map<String, Object> generalBindings = new HashMap<String, Object>();
 
     protected String setupScript;
 
@@ -83,12 +83,17 @@ public class GroovyRunner {
 
     public Object run(String path, Map<String, Object> variables) throws InterruptedException {
         Object result = null;
-        try (Reader reader = getScriptResource(path)) {
-            if (reader != null) {
-                result = run(reader, variables, path.substring(path.lastIndexOf('/') +1 ));
+        Reader reader = getScriptResource(path);
+        if (reader != null) {
+            try {
+                try {
+                    result = run(reader, variables, path.substring(path.lastIndexOf('/') + 1));
+                } finally {
+                    reader.close();
+                }
+            } catch (IOException ioex) {
+                LOG.error(ioex.getMessage(), ioex);
             }
-        } catch (IOException ioex) {
-            LOG.error(ioex.getMessage(), ioex);
         }
         return result;
     }
@@ -108,14 +113,14 @@ public class GroovyRunner {
 
     protected Script getScript(Reader scriptReader, Map<String, Object> variables, String name) {
         if (variables == null) {
-            variables = new HashMap<>();
+            variables = new HashMap<String, Object>();
         }
         CompilerConfiguration compilerConfig = new CompilerConfiguration();
         compilerConfig.addCompilationCustomizers(
                 new ASTTransformationCustomizer(ThreadInterrupt.class));
 
         Binding binding = new Binding(variables);
-        GroovyShell shell = new GroovyShell(binding,compilerConfig);
+        GroovyShell shell = new GroovyShell(binding, compilerConfig);
         if (name == null) {
             return shell.parse(scriptReader);
         } else {
@@ -135,7 +140,7 @@ public class GroovyRunner {
                     if (binding.getVariable(name) == null) {
                         binding.setVariable(name, entry.getValue());
                     }
-                } catch (MissingPropertyException mpex){
+                } catch (MissingPropertyException mpex) {
                     binding.setVariable(name, entry.getValue());
                 }
             }
@@ -148,7 +153,7 @@ public class GroovyRunner {
         if (reader != null) {
             try {
                 try {
-                    Map<String, Object> variables = new HashMap<>();
+                    Map<String, Object> variables = new HashMap<String, Object>();
                     variables.put("script", script);
                     variables.put("log", LOG);
                     variables.put("out", out);
@@ -177,8 +182,10 @@ public class GroovyRunner {
                         if (inputStream != null) {
                             reader = new InputStreamReader(inputStream, ENCODING);
                         }
-                    } catch (UnsupportedEncodingException | RepositoryException ueex) {
-                        LOG.error(ueex.getMessage(), ueex);
+                    } catch (UnsupportedEncodingException ex) {
+                        LOG.error(ex.getMessage(), ex);
+                    } catch (RepositoryException ex) {
+                        LOG.error(ex.getMessage(), ex);
                     }
                 }
             }
@@ -214,7 +221,7 @@ public class GroovyRunner {
 
         ResourceResolver resolver = null;
 
-        HashMap<String, Object> authMap = new HashMap<>();
+        HashMap<String, Object> authMap = new HashMap<String, Object>();
         authMap.put("user.jcr.session", session);
 
         try {

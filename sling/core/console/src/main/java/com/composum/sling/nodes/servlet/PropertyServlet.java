@@ -1,6 +1,5 @@
 package com.composum.sling.nodes.servlet;
 
-import com.composum.sling.nodes.NodesConfiguration;
 import com.composum.sling.core.ResourceHandle;
 import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.core.mapping.MappingRules;
@@ -12,6 +11,7 @@ import com.composum.sling.core.util.MimeTypeUtil;
 import com.composum.sling.core.util.PropertyUtil;
 import com.composum.sling.core.util.RequestUtil;
 import com.composum.sling.core.util.ResponseUtil;
+import com.composum.sling.nodes.NodesConfiguration;
 import com.google.gson.stream.JsonWriter;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -35,7 +35,6 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
-import javax.jcr.ValueFactory;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedInputStream;
@@ -69,7 +68,7 @@ public class PropertyServlet extends AbstractServiceServlet {
 
     public enum Operation {get, put, map, copy, remove}
 
-    protected ServletOperationSet<Extension, Operation> operations = new ServletOperationSet<>(Extension.json);
+    protected ServletOperationSet<Extension, Operation> operations = new ServletOperationSet<Extension, Operation>(Extension.json);
 
     protected ServletOperationSet getOperations() {
         return operations;

@@ -298,22 +298,19 @@ public class ResourceUtil extends org.apache.sling.api.resource.ResourceUtil {
                 NodeType type = node.getPrimaryNodeType();
                 if (type != null) {
                     String typeName = type.getName();
-                    switch (typeName) {
-                        case TYPE_FILE:
-                            return true;
-                        case TYPE_RESOURCE:
-                        case TYPE_UNSTRUCTURED:
-                            try {
-                                Property mimeType = node.getProperty(PROP_MIME_TYPE);
-                                if (mimeType != null && StringUtils.isNotBlank(mimeType.getString())) {
-                                    node.getProperty(ResourceUtil.PROP_DATA);
-                                    // PathNotFountException if not present
-                                    return true;
-                                }
-                            } catch (PathNotFoundException pnfex) {
-                                // ok, was a check only
+                    if (TYPE_FILE.equals(typeName)) {
+                        return true;
+                    } else if (TYPE_RESOURCE.equals(typeName) || TYPE_UNSTRUCTURED.equals(typeName)) {
+                        try {
+                            Property mimeType = node.getProperty(PROP_MIME_TYPE);
+                            if (mimeType != null && StringUtils.isNotBlank(mimeType.getString())) {
+                                node.getProperty(ResourceUtil.PROP_DATA);
+                                // PathNotFountException if not present
+                                return true;
                             }
-                            break;
+                        } catch (PathNotFoundException pnfex) {
+                            // ok, was a check only
+                        }
                     }
                 }
             } catch (RepositoryException e) {

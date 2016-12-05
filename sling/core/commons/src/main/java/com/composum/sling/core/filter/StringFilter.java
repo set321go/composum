@@ -75,7 +75,7 @@ public interface StringFilter {
     abstract class FilterBase implements StringFilter {
 
         public List<String> getFiltered(Iterable<String> values) {
-            List<String> result = new ArrayList<>();
+            List<String> result = new ArrayList<String>();
             for (String value : values) {
                 if (accept(value)) {
                     result.add(value);
@@ -85,7 +85,7 @@ public interface StringFilter {
         }
 
         public String[] getFiltered(String... values) {
-            List<String> result = new ArrayList<>();
+            List<String> result = new ArrayList<String>();
             for (String value : values) {
                 if (accept(value)) {
                     result.add(value);
@@ -154,7 +154,7 @@ public interface StringFilter {
          * @return the pattern array
          */
         protected static List<Pattern> patterns(String[] values) {
-            List<Pattern> patterns = new ArrayList<>();
+            List<Pattern> patterns = new ArrayList<Pattern>();
             for (String value : values) {
                 patterns.add(Pattern.compile(value));
             }
@@ -168,7 +168,7 @@ public interface StringFilter {
          * @return the pattern array
          */
         protected static List<Pattern> patterns(List<String> values) {
-            List<Pattern> patterns = new ArrayList<>();
+            List<Pattern> patterns = new ArrayList<Pattern>();
             for (String value : values) {
                 patterns.add(Pattern.compile(value));
             }
@@ -351,7 +351,7 @@ public interface StringFilter {
          */
         public FilterSet(Rule rule, StringFilter... filters) {
             this.rule = rule;
-            this.set = new ArrayList<>();
+            this.set = new ArrayList<StringFilter>();
             Collections.addAll(this.set, filters);
         }
 

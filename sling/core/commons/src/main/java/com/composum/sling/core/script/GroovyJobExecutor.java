@@ -133,12 +133,15 @@ public class GroovyJobExecutor extends AbstractJobExecutor<Object> {
         Resource scriptAuditResource = resourceResolver.create(auditResource, scriptname, new HashMap<String, Object>() {{
             put(PROP_PRIMARY_TYPE, TYPE_FILE);
         }});
-        try (final InputStream inputStream = scriptResource.adaptTo(InputStream.class);) {
+        final InputStream inputStream = scriptResource.adaptTo(InputStream.class);
+        try {
             resourceResolver.create(scriptAuditResource, CONTENT_NODE, new HashMap<String, Object>() {{
                 put(PROP_PRIMARY_TYPE, TYPE_RESOURCE);
                 put(PROP_MIME_TYPE, "text/x-groovy");
                 put(PROP_DATA, inputStream);
             }});
+        } finally {
+            inputStream.close();
         }
         resourceResolver.commit();
     }
@@ -156,7 +159,7 @@ public class GroovyJobExecutor extends AbstractJobExecutor<Object> {
             ClassLoader tccl = Thread.currentThread().getContextClassLoader();
             Thread.currentThread().setContextClassLoader(dynamicClassLoaderManager.getDynamicClassLoader());
             final GroovyRunner groovyRunner = new GroovyRunner(session, out, groovySetupScript);
-            final HashMap<String, Object> variables = new HashMap<>();
+            final HashMap<String, Object> variables = new HashMap<String, Object>();
             variables.put("jctx", context);
             variables.put("job", job);
             final String reference = job.getProperty(JOB_REFRENCE_PROPERTY, String.class);

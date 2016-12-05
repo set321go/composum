@@ -20,7 +20,7 @@ public abstract class AbstractTagTEI extends TagExtraInfo {
 
     @Override
     public VariableInfo[] getVariableInfo(TagData data) {
-        List<VariableInfo> variables = new ArrayList<>();
+        List<VariableInfo> variables = new ArrayList<VariableInfo>();
         collectVariables(data, variables);
         return variables.toArray(new VariableInfo[variables.size()]);
     }

@@ -25,11 +25,11 @@ public abstract class UrlTag extends CpnlBodyTagSupport implements DynamicAttrib
     private String role;
     private String classes;
 
-    protected Map<String, Object> dynamicAttributes = new LinkedHashMap<>();
+    protected Map<String, Object> dynamicAttributes = new LinkedHashMap<String, Object>();
 
     protected void clear() {
         super.clear();
-        dynamicAttributes = new LinkedHashMap<>();
+        dynamicAttributes = new LinkedHashMap<String, Object>();
         tagName = null;
         urlAttr = null;
         url = null;

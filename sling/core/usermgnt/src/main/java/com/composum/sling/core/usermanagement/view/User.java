@@ -48,7 +48,7 @@ public class User extends ConsoleSlingBean {
     }
 
     public List<String> getGroups() throws RepositoryException {
-        List<String> groups = new ArrayList<>();
+        List<String> groups = new ArrayList<String>();
         Iterator<org.apache.jackrabbit.api.security.user.Group> groupIterator = getUser().memberOf();
         while (groupIterator.hasNext()) {
             Group group = groupIterator.next();

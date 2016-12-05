@@ -94,7 +94,7 @@ public class NodeServlet extends NodeTreeServlet {
     @Reference
     protected NodesConfiguration nodesConfig;
 
-    protected Map<String, ResourceFilter> nodeFilters = new LinkedHashMap<>();
+    protected Map<String, ResourceFilter> nodeFilters = new LinkedHashMap<String, ResourceFilter>();
 
     /**
      * injection of the filter configurations provided by the OSGi configuration
@@ -112,7 +112,7 @@ public class NodeServlet extends NodeTreeServlet {
      */
     protected synchronized void bindFilterConfiguration(final FilterConfiguration config) {
         if (filterConfigurations == null) {
-            filterConfigurations = new ArrayList<>();
+            filterConfigurations = new ArrayList<FilterConfiguration>();
         }
         filterConfigurations.add(config);
         String key = config.getName();
@@ -185,7 +185,7 @@ public class NodeServlet extends NodeTreeServlet {
         query, queryTemplates, filters, map
     }
 
-    protected ServletOperationSet<Extension, Operation> operations = new ServletOperationSet<>(Extension.json);
+    protected ServletOperationSet<Extension, Operation> operations = new ServletOperationSet<Extension, Operation>(Extension.json);
 
     @Override
     protected ServletOperationSet getOperations() {
@@ -700,7 +700,7 @@ public class NodeServlet extends NodeTreeServlet {
                                 new StringFilter.WhiteList(".*" + query + ".*")),
                         getNodeFilter(request));
 
-                List<Resource> matchingChilds = new ArrayList<>();
+                List<Resource> matchingChilds = new ArrayList<Resource>();
                 for (Resource child : resource.getChildren()) {
                     if (filter.accept(child)) {
                         matchingChilds.add(child);

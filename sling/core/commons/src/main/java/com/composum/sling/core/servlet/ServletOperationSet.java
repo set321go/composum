@@ -28,10 +28,10 @@ public class ServletOperationSet<E extends Enum, O extends Enum> {
     public enum Method {GET, POST, PUT, DELETE}
 
     /** the default operation keys for each provided extension */
-    protected Map<Method, Map<E, O>> operationDefaults = new HashMap<>();
+    protected Map<Method, Map<E, O>> operationDefaults = new HashMap<Method, Map<E, O>>();
 
     /** the operations map set up during servlet initialization */
-    protected Map<Method, Map<E, Map<O, ServletOperation>>> operationMap = new HashMap<>();
+    protected Map<Method, Map<E, Map<O, ServletOperation>>> operationMap = new HashMap<Method, Map<E, Map<O, ServletOperation>>>();
 
     protected final E defaultExtension;
 
@@ -74,12 +74,12 @@ public class ServletOperationSet<E extends Enum, O extends Enum> {
                              ServletOperation implementation, boolean isDefault) {
         Map<E, Map<O, ServletOperation>> extensions = operationMap.get(method);
         if (extensions == null) {
-            extensions = new HashMap<>();
+            extensions = new HashMap<E, Map<O, ServletOperation>>();
             operationMap.put(method, extensions);
         }
         Map<O, ServletOperation> operations = extensions.get(extension);
         if (operations == null) {
-            operations = new HashMap<>();
+            operations = new HashMap<O, ServletOperation>();
             extensions.put(extension, operations);
         }
         if (implementation != null) {
@@ -106,7 +106,7 @@ public class ServletOperationSet<E extends Enum, O extends Enum> {
     public void setDefaultOperation(Method method, E extension, O operation) {
         Map<E, O> extensions = operationDefaults.get(method);
         if (extensions == null) {
-            extensions = new HashMap<>();
+            extensions = new HashMap<E, O>();
             operationDefaults.put(method, extensions);
         }
         if (operation != null) {

@@ -70,20 +70,25 @@ public class YUIJavascriptProcessor implements JavascriptProcessor {
                 context.execute(new Runnable() {
                     @Override
                     public void run() {
-                        try (OutputStreamWriter writer = new OutputStreamWriter(outputStream);
-                             InputStreamReader sourceReader = new InputStreamReader(source, DEFAULT_CHARSET)) {
-                            final Reporter errorReporter = new Reporter(clientlib);
-                            final JavaScriptCompressor compressor =
-                                    new JavaScriptCompressor(sourceReader, errorReporter);
-                            compressor.compress(
-                                    writer,
-                                    clientlibConfig.getJavascriptLineBreak(),
-                                    clientlibConfig.getJavascriptMunge(),
-                                    false,
-                                    true,
-                                    !clientlibConfig.getJavascriptOptimize());
-                            writer.flush();
-                            writer.close();
+                        OutputStreamWriter writer = new OutputStreamWriter(outputStream);
+                        try {
+                            InputStreamReader sourceReader = new InputStreamReader(source, DEFAULT_CHARSET);
+                            try {
+                                final Reporter errorReporter = new Reporter(clientlib);
+                                final JavaScriptCompressor compressor =
+                                        new JavaScriptCompressor(sourceReader, errorReporter);
+                                compressor.compress(
+                                        writer,
+                                        clientlibConfig.getJavascriptLineBreak(),
+                                        clientlibConfig.getJavascriptMunge(),
+                                        false,
+                                        true,
+                                        !clientlibConfig.getJavascriptOptimize());
+                                writer.flush();
+                            } finally {
+                                writer.close();
+                                sourceReader.close();
+                            }
                         } catch (IOException ex) {
                             LOG.error(ex.getMessage(), ex);
                         }

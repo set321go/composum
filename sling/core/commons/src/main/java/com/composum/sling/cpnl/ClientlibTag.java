@@ -28,7 +28,7 @@ public class ClientlibTag extends CpnlBodyTagSupport {
 
     protected Clientlib.Type type;
     protected String path;
-    protected Map<String, String> properties = new LinkedHashMap<>();
+    protected Map<String, String> properties = new LinkedHashMap<String, String>();
 
     public void setType(String type) {
         this.type = Clientlib.Type.valueOf(type);

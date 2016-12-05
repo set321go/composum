@@ -234,7 +234,7 @@ public class NodesConfigImpl implements NodesConfiguration {
                 (String) properties.get(REFERENCEABLE_NODES_FILTER_KEY));
         orderableNodesFilter = ResourceFilterMapping.fromString(
                 (String) properties.get(ORDERABLE_NODES_FILTER_KEY));
-        enabledServlets = new HashMap<>();
+        enabledServlets = new HashMap<String, Boolean>();
         enabledServlets.put("PackageServlet", packageServletEnabled =
                 (Boolean) properties.get(PACKAGE_SERVLET_ENABLED));
         enabledServlets.put(SecurityServlet.class.getSimpleName(), securityServletEnabled =

@@ -122,7 +122,7 @@ public abstract class NodeTreeServlet extends AbstractServiceServlet {
         writeNodeIdentifiers(writer, resource, labelType, isVirtual);
         writeNodeTreeType(writer, filter, resource, isVirtual);
         writeNodeJcrState(writer, resource);
-        List<Resource> children = new ArrayList<>();
+        List<Resource> children = new ArrayList<Resource>();
         boolean hasChildren = false;
         for (Resource child : resource.getChildren()) {
             hasChildren = true;

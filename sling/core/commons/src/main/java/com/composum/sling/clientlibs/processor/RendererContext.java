@@ -41,7 +41,7 @@ public class RendererContext {
     protected RendererContext(BeanContext context, SlingHttpServletRequest request) {
         this.context = context;
         this.request = request;
-        this.renderedClientlibs = new HashSet<>();
+        this.renderedClientlibs = new HashSet<ClientlibLink>();
     }
 
     public boolean isClientlibRendered(ClientlibRef reference) {

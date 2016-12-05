@@ -36,7 +36,7 @@ public class JobUtil {
     }
 
     public static Collection<JobFacade> getAuditJobs(JobManager.QueryType state, final ResourceResolver resolver) {
-        final List<JobFacade> result = new ArrayList<>();
+        final List<JobFacade> result = new ArrayList<JobFacade>();
         final Iterator<Resource> resources = resolver.findResources("/jcr:root/var/audit/jobs//*[@slingevent:eventId]", "xpath");
         while (resources.hasNext()) {
             final JobFacade job = new JobFacade.AuditJob(resources.next());

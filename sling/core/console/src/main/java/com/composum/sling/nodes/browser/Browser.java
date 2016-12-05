@@ -30,7 +30,7 @@ public class Browser extends BrowserBean {
     public static final Map<String, String> EDITOR_MODES;
 
     static {
-        EDITOR_MODES = new HashMap<>();
+        EDITOR_MODES = new HashMap<String, String>();
         EDITOR_MODES.put("json", "json");
         EDITOR_MODES.put("xml", "xml");
         EDITOR_MODES.put(HTML, HTML);

@@ -139,7 +139,7 @@ public class ObjectMapping {
     protected static final Map<Class<?>, MappingStrategy> TO_RESOURCE_STRATEGIES;
 
     static {
-        TO_RESOURCE_STRATEGIES = new HashMap<>();
+        TO_RESOURCE_STRATEGIES = new HashMap<Class<?>, MappingStrategy>();
         TO_RESOURCE_STRATEGIES.put(ResourceFilter.FilterSet.class, RESOURCE_FILTER_STRATEGY);
         TO_RESOURCE_STRATEGIES.put(ResourceFilter.ResourceTypeFilter.class, RESOURCE_FILTER_STRATEGY);
         TO_RESOURCE_STRATEGIES.put(ResourceFilter.MixinTypeFilter.class, RESOURCE_FILTER_STRATEGY);
@@ -152,8 +152,8 @@ public class ObjectMapping {
         TO_RESOURCE_STRATEGIES.put(StringFilter.WhiteList.class, STRING_FILTER_STRATEGY);
         TO_RESOURCE_STRATEGIES.put(StringFilter.BlackList.class, STRING_FILTER_STRATEGY);
         TO_RESOURCE_STRATEGIES.put(StringFilter.All.class, STRING_FILTER_STRATEGY);
-        FROM_RESOURCE_FILTERS = new ArrayList<>();
-        FROM_RESOURCE_STRATEGIES = new ArrayList<>();
+        FROM_RESOURCE_FILTERS = new ArrayList<ResourceFilter>();
+        FROM_RESOURCE_STRATEGIES = new ArrayList<MappingStrategy>();
         FROM_RESOURCE_FILTERS.add(RESOURCE_FILTER_FILTER);
         FROM_RESOURCE_STRATEGIES.add(RESOURCE_FILTER_STRATEGY);
         FROM_RESOURCE_FILTERS.add(STRING_FILTER_FILTER);

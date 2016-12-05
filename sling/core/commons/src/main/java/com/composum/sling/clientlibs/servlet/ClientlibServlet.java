@@ -51,7 +51,9 @@ public class ClientlibServlet extends SlingSafeMethodsServlet {
                 deliverClientlib(request, response, clientlib);
             }
 
-        } catch (RepositoryException | LoginException ex) {
+        } catch (LoginException ex) {
+            throw new ServletException(ex);
+        } catch (RepositoryException ex) {
             throw new ServletException(ex);
         }
     }

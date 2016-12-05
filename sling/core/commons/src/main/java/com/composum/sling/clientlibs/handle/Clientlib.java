@@ -160,7 +160,7 @@ public class Clientlib {
     //
 
     public List<ClientlibLink> getLinks(RendererContext context, boolean expanded) {
-        List<ClientlibLink> links = new ArrayList<>();
+        List<ClientlibLink> links = new ArrayList<ClientlibLink>();
         getLinks(links, context, expanded, null, false);
         return links;
     }
@@ -193,7 +193,7 @@ public class Clientlib {
                                ClientlibRef reference, ResourceHandle resource) {
         boolean hasEmbeddedContent = false;
         if (resource.isValid()) {
-            Map<String, String> properties = new HashMap<>();
+            Map<String, String> properties = new HashMap<String, String>();
             for (String key : LINK_PROPERTIES) {
                 String value = resource.getProperty(key, (String) null);
                 if (value != null) properties.put(key, value);
@@ -269,7 +269,7 @@ public class Clientlib {
     public List<ClientlibLink> processContent(OutputStream output,
                                               ClientlibProcessor processor, ProcessorContext context)
             throws IOException, RepositoryException {
-        List<ClientlibLink> contentSet = new ArrayList<>();
+        List<ClientlibLink> contentSet = new ArrayList<ClientlibLink>();
         processContent(output, processor, context, definition, false, contentSet);
         output.close();
         return contentSet;

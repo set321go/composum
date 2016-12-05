@@ -1,6 +1,5 @@
 package com.composum.sling.core.util;
 
-import com.composum.sling.core.BeanContext;
 import com.composum.sling.core.exception.PropertyValueFormatException;
 import com.composum.sling.core.filter.StringFilter;
 import com.composum.sling.core.mapping.MappingRules;
@@ -35,7 +34,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 
 /**
@@ -70,7 +78,7 @@ public class JsonUtil {
      * Transforms a JSON object (stream) into a Map object.
      */
     public static Map<String, Object> jsonMap(JsonReader reader) throws IOException {
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<String, Object>();
         reader.beginObject();
         while (reader.hasNext() && reader.peek() == JsonToken.NAME) {
             String name = reader.nextName();
@@ -95,7 +103,7 @@ public class JsonUtil {
             case NUMBER:
                 return reader.nextLong();
             case BEGIN_ARRAY:
-                ArrayList<Object> list = new ArrayList<>();
+                ArrayList<Object> list = new ArrayList<Object>();
                 reader.beginArray();
                 while (reader.peek() != JsonToken.END_ARRAY) {
                     list.add(jsonValue(reader));
@@ -240,7 +248,7 @@ public class JsonUtil {
         Node node = resource.adaptTo(Node.class);
 
         // property collection for a sorted output
-        TreeMap<String, Object> propertiesSet = new TreeMap<>();
+        TreeMap<String, Object> propertiesSet = new TreeMap<String, Object>();
         if (node != null) {
             // retrieve properties from the resources repository node
             PropertyIterator iterator = node.getProperties();
@@ -289,7 +297,7 @@ public class JsonUtil {
      */
     public static void exportChildOrderProperty(JsonWriter writer, Resource resource)
             throws IOException {
-        List<String> names = new ArrayList<>();
+        List<String> names = new ArrayList<String>();
         Iterable<Resource> children = resource.getChildren();
         for (Resource child : children) {
             String name = child.getName();
@@ -344,8 +352,8 @@ public class JsonUtil {
 
         Resource resource = resolver.getResource(path);
 
-        ArrayList<String> childrenSet = new ArrayList<>();
-        HashMap<String, JsonProperty> propertiesSet = new HashMap<>();
+        ArrayList<String> childrenSet = new ArrayList<String>();
+        HashMap<String, JsonProperty> propertiesSet = new HashMap<String, JsonProperty>();
 
         reader.beginObject();
 
@@ -403,7 +411,7 @@ public class JsonUtil {
                             // FIXME: child reorder implementation needed
                             if (!MappingRules.CHILD_ORDER_NAME.equals(name)) {
                                 property = parseJsonProperty(reader, name);
-                                ArrayList<Object> values = new ArrayList<>();
+                                ArrayList<Object> values = new ArrayList<Object>();
                                 values.add(property.value);
                                 while ((token = reader.peek()) != JsonToken.END_ARRAY) {
                                     switch (token) {
@@ -656,7 +664,7 @@ public class JsonUtil {
                                            Node node, MappingRules mapping)
             throws RepositoryException, IOException {
         if (node != null) {
-            TreeMap<String, Property> sortedProperties = new TreeMap<>();
+            TreeMap<String, Property> sortedProperties = new TreeMap<String, Property>();
             PropertyIterator iterator = node.getProperties();
             while (iterator.hasNext()) {
                 Property property = iterator.nextProperty();
@@ -694,7 +702,7 @@ public class JsonUtil {
                                          ValueMap values, MappingRules mapping)
             throws RepositoryException, IOException {
         if (values != null) {
-            TreeMap<String, Object> sortedProperties = new TreeMap<>();
+            TreeMap<String, Object> sortedProperties = new TreeMap<String, Object>();
             Iterator<Map.Entry<String, Object>> iterator = values.entrySet().iterator();
             while (iterator.hasNext()) {
                 Map.Entry<String, Object> entry = iterator.next();

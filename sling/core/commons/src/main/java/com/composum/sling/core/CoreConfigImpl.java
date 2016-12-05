@@ -135,7 +135,7 @@ public class CoreConfigImpl implements CoreConfiguration {
         if (errorpagesPath.endsWith("/") && errorpagesPath.length() > 1) {
             errorpagesPath = errorpagesPath.substring(errorpagesPath.length() - 1);
         }
-        enabledServlets = new HashMap<>();
+        enabledServlets = new HashMap<String, Boolean>();
         enabledServlets.put(SystemServlet.class.getSimpleName(), systemServletEnabled =
                 (Boolean) properties.get(SYSTEM_SERVLET_ENABLED));
         enabledServlets.put(JobControlServlet.class.getSimpleName(), jobcontrolServletEnabled =

@@ -134,19 +134,19 @@ public class PackageJobExecutor extends AbstractJobExecutor<String> {
                 JcrPackage jcrPckg = getJcrPackage(job, manager);
                 String operation = (String) job.getProperty("operation");
                 if (StringUtils.isNotBlank(operation)) {
-                    switch (operation.toLowerCase()) {
-                        case "install":
-                            final String name = jcrPckg.getPackage().getId().getName();
-                            LOG.info("start of installation of package '{}'", name);
-                            final String call = new InstallOperation(manager, jcrPckg).call();
-                            LOG.info("installation of package '{}' done", name);
-                            return call;
-                        case "assemble":
-                            return new AssembleOperation(manager, jcrPckg).call();
-                        case "uninstall":
-                            return new UninstallOperation(manager, jcrPckg).call();
-                        default:
-                            throw new Exception("Unsupported operation: " + operation);
+                    String op = operation.toLowerCase();
+                    if ("install".equals(op)) {
+                        final String name = jcrPckg.getPackage().getId().getName();
+                        LOG.info("start of installation of package '{}'", name);
+                        final String call = new InstallOperation(manager, jcrPckg).call();
+                        LOG.info("installation of package '{}' done", name);
+                        return call;
+                    } else if ("assemble".equals(op)) {
+                        return new AssembleOperation(manager, jcrPckg).call();
+                    } else if ("uninstall".equals(op)) {
+                        return new UninstallOperation(manager, jcrPckg).call();
+                    } else {
+                        throw new Exception("Unsupported operation: " + operation);
                     }
                 } else {
                     throw new Exception("No operation requested!");

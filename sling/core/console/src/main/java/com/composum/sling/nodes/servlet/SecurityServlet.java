@@ -75,7 +75,7 @@ public class SecurityServlet extends AbstractServiceServlet {
 
     public enum Operation {accessPolicy, accessPolicies, allPolicies, reorder, supportedPrivileges, principals, restrictionNames}
 
-    protected ServletOperationSet<Extension, Operation> operations = new ServletOperationSet<>(Extension.json);
+    protected ServletOperationSet<Extension, Operation> operations = new ServletOperationSet<Extension, Operation>(Extension.json);
 
     @Override
     protected ServletOperationSet getOperations() {
@@ -160,7 +160,7 @@ public class SecurityServlet extends AbstractServiceServlet {
                     }
                 };
                 final Iterator<Authorizable> principals = session.getUserManager().findAuthorizables(q);
-                final List<String> principalNames = new ArrayList<>();
+                final List<String> principalNames = new ArrayList<String>();
                 while (principals.hasNext()) {
                     final Authorizable authorizable = principals.next();
                     principalNames.add(authorizable.getPrincipal().getName());
@@ -212,7 +212,7 @@ public class SecurityServlet extends AbstractServiceServlet {
                 final String path = AbstractServiceServlet.getPath(request);
 
                 final Privilege[] supportedPrivileges = acManager.getSupportedPrivileges(path);
-                final List<String> privilegeNames = new ArrayList<>(supportedPrivileges.length);
+                final List<String> privilegeNames = new ArrayList<String>(supportedPrivileges.length);
                 for (final Privilege privilege : supportedPrivileges) {
                     privilegeNames.add(privilege.getName());
                 }
@@ -288,7 +288,7 @@ public class SecurityServlet extends AbstractServiceServlet {
                 final Principal principal = principalManager.getPrincipal(entry.principal);
                 final Privilege[] privileges = AccessControlUtils.privilegesFromNames(acManager, entry.privileges);
 
-                final Map<String, Value> restrictions = new HashMap<>();
+                final Map<String, Value> restrictions = new HashMap<String, Value>();
                 for (final String restriction : entry.restrictions) {
                     final Value v = new StringValue(restriction.substring(restriction.indexOf('=') + 1));
                     restrictions.put(restriction.substring(0, restriction.indexOf('=')), v);

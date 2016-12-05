@@ -51,7 +51,7 @@ public class ResourceFilterMapping {
             String values = matcher.group(2);
             try {
                 ResourceFilter.FilterSet.Rule rule = ResourceFilter.FilterSet.Rule.valueOf(type);
-                List<ResourceFilter> filters = new ArrayList<>();
+                List<ResourceFilter> filters = new ArrayList<ResourceFilter>();
                 String nextRule = "";
                 for (String item : StringUtils.split(values, ',')) {
                     nextRule += item;
@@ -142,7 +142,7 @@ public class ResourceFilterMapping {
     protected static final Map<Class<? extends ResourceFilter>, MappingStrategy> STRATEGY_MAP;
 
     static {
-        STRATEGY_MAP = new HashMap<>();
+        STRATEGY_MAP = new HashMap<Class<? extends ResourceFilter>, MappingStrategy>();
         STRATEGY_MAP.put(ResourceFilter.FilterSet.class, new FilterSetStrategy());
         STRATEGY_MAP.put(ResourceFilter.PrimaryTypeFilter.class, new PatternFilterStrategy());
         STRATEGY_MAP.put(ResourceFilter.MixinTypeFilter.class, new PatternFilterStrategy());
@@ -235,7 +235,7 @@ public class ResourceFilterMapping {
             ResourceFilter.FilterSet.Rule rule = ResourceFilter.FilterSet.Rule.valueOf(
                     resource.getProperty(PROPERTY_RULE, (String) null));
             List<ResourceHandle> filterResources = resource.getChildrenByResourceType(RESOURCE_FILTER_TYPE);
-            List<ResourceFilter> filterList = new ArrayList<>();
+            List<ResourceFilter> filterList = new ArrayList<ResourceFilter>();
             for (ResourceHandle filterRes : filterResources) {
                 ResourceFilter filter = ResourceFilterMapping.fromResource(filterRes);
                 filterList.add(filter);

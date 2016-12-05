@@ -13,7 +13,7 @@ public class ProcessorPipeline implements ClientlibProcessor {
     protected List<ClientlibProcessor> processors;
 
     public ProcessorPipeline(ClientlibProcessor... processors) {
-        this.processors = new ArrayList<>();
+        this.processors = new ArrayList<ClientlibProcessor>();
         for (ClientlibProcessor processor : processors) {
             addProcessor(processor);
         }

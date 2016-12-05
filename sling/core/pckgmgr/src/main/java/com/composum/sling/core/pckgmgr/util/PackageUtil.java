@@ -405,10 +405,10 @@ public class PackageUtil {
             resolver.commit();
         }
         if (pngStream != null) {
-            HashMap<String, Object> fileProps = new HashMap<>();
+            HashMap<String, Object> fileProps = new HashMap<String, Object>();
             fileProps.put(ResourceUtil.PROP_PRIMARY_TYPE, ResourceUtil.TYPE_FILE);
             Resource fileRes = resolver.create(pckgDefRes, THUMBNAIL_PNG, fileProps);
-            HashMap<String, Object> contentProps = new HashMap<>();
+            HashMap<String, Object> contentProps = new HashMap<String, Object>();
             contentProps.put(ResourceUtil.PROP_PRIMARY_TYPE, ResourceUtil.TYPE_RESOURCE);
             contentProps.put(ResourceUtil.PROP_MIME_TYPE, "image/png");
             contentProps.put(ResourceUtil.PROP_DATA, pngStream);
@@ -454,7 +454,7 @@ public class PackageUtil {
             put("name", name);
             put("text", name);
             put("type", "/".equals(path) ? "root" : "folder");
-            Map<String, Object> treeState = new LinkedHashMap<>();
+            Map<String, Object> treeState = new LinkedHashMap<String, Object>();
             treeState.put("loaded", Boolean.FALSE);
             put("state", treeState);
         }
@@ -521,9 +521,9 @@ public class PackageUtil {
         public void toJson(JsonWriter writer) throws RepositoryException, IOException {
             String name = getFilename();
             String path = getPath();
-            Map<String, Object> treeState = new LinkedHashMap<>();
+            Map<String, Object> treeState = new LinkedHashMap<String, Object>();
             treeState.put("loaded", Boolean.TRUE);
-            Map<String, Object> additionalAttributes = new LinkedHashMap<>();
+            Map<String, Object> additionalAttributes = new LinkedHashMap<String, Object>();
             additionalAttributes.put("id", path);
             additionalAttributes.put("path", path);
             additionalAttributes.put("name", name);
@@ -729,7 +729,8 @@ public class PackageUtil {
             for (int i = 0; i < values.length; i++) {
                 result[i] = values[i].getString();
             }
-        } catch (PropertyNotFoundException | PathNotFoundException pnfex) {
+        } catch (PropertyNotFoundException pnfex) {
+        } catch (PathNotFoundException pnfex) {
         } catch (RepositoryException rex) {
             LOG.error(rex.getMessage(), rex);
         }
@@ -781,7 +782,7 @@ public class PackageUtil {
         class MultiStringSetter implements DefinitionSetter<String[]> {
 
             public String[] get(JsonReader reader) throws IOException {
-                List<String> set = new ArrayList<>();
+                List<String> set = new ArrayList<String>();
                 if (reader.peek() == JsonToken.BEGIN_ARRAY) {
                     reader.beginArray();
                     while (reader.peek() != JsonToken.END_ARRAY) {
@@ -808,7 +809,7 @@ public class PackageUtil {
     public static final Map<String, DefinitionSetter> DEFINITION_SETTERS;
 
     static {
-        DEFINITION_SETTERS = new HashMap<>();
+        DEFINITION_SETTERS = new HashMap<String, DefinitionSetter>();
         DEFINITION_SETTERS.put(DEF_AC_HANDLING, DefinitionSetter.STRING);
         DEFINITION_SETTERS.put(DEF_DEPENDENCIES, DefinitionSetter.MULTI_STRING);
         DEFINITION_SETTERS.put(DEF_DESCRIPTION, DefinitionSetter.STRING);

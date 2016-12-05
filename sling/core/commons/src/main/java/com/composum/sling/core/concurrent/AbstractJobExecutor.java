@@ -81,7 +81,7 @@ public abstract class AbstractJobExecutor<Result> implements JobExecutor, EventH
     public static final Map<String, Object> CRUD_AUDIT_FOLDER_PROPS;
 
     static {
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<String, Object>();
         map.put(PROP_PRIMARY_TYPE, "sling:Folder");
         CRUD_AUDIT_FOLDER_PROPS = Collections.unmodifiableMap(map);
     }
@@ -134,7 +134,7 @@ public abstract class AbstractJobExecutor<Result> implements JobExecutor, EventH
             String userId = job.getProperty(JOB_USERID_PROPERTY, String.class);
             Session serviceSession = serviceResolver.adaptTo(Session.class);
             session = serviceSession.impersonate(new SimpleCredentials(userId, new char[0]));
-            HashMap<String, Object> authInfo = new HashMap<>();
+            HashMap<String, Object> authInfo = new HashMap<String, Object>();
             authInfo.put("user.jcr.session", session);
             resourceResolver = resolverFactory.getResourceResolver(authInfo);
         }
@@ -167,7 +167,11 @@ public abstract class AbstractJobExecutor<Result> implements JobExecutor, EventH
                 adminResolver.adaptTo(Session.class).refresh(true);
                 auditResource = giveParent(adminResolver, auditPath);
                 adminResolver.commit();
-            } catch (PersistenceException|RepositoryException e) {
+            } catch (PersistenceException e) {
+                LOG.error("Error creating audit of Job.", e);
+                adminResolver.close();
+                return context.result().message(e.getMessage()).cancelled();
+            } catch (RepositoryException e) {
                 LOG.error("Error creating audit of Job.", e);
                 adminResolver.close();
                 return context.result().message(e.getMessage()).cancelled();
@@ -177,8 +181,9 @@ public abstract class AbstractJobExecutor<Result> implements JobExecutor, EventH
         }
 
         try {
-            try (FileOutputStream fileOutputStream = new FileOutputStream(tempFile);
-                 PrintWriter out = new PrintWriter(new OutputStreamWriter(fileOutputStream, "UTF-8"))) {
+            FileOutputStream fileOutputStream = new FileOutputStream(tempFile);
+            PrintWriter out = new PrintWriter(new OutputStreamWriter(fileOutputStream, "UTF-8"));
+            try {
                 final ExecutorService executorService = Executors.newSingleThreadExecutor();
                 try {
                     final Future<Result> submit = executorService.submit(
@@ -206,6 +211,9 @@ public abstract class AbstractJobExecutor<Result> implements JobExecutor, EventH
                         return context.result().message(e.getMessage()).cancelled();
                     }
                 }
+            } finally {
+                out.close();
+                fileOutputStream.close();
             }
         } catch (Exception e) {
             LOG.error("Error executing job:" + reference, e);
@@ -215,12 +223,15 @@ public abstract class AbstractJobExecutor<Result> implements JobExecutor, EventH
                 Resource logFileResource = adminResolver.create(auditResource, outfile.substring(outfile.lastIndexOf(File.separator) + 1), new HashMap<String, Object>() {{
                     put(PROP_PRIMARY_TYPE, TYPE_FILE);
                 }});
-                try (final InputStream inputStream = new FileInputStream(tempFile)) {
+                final InputStream inputStream = new FileInputStream(tempFile);
+                try {
                     adminResolver.create(logFileResource, CONTENT_NODE, new HashMap<String, Object>() {{
                         put(PROP_PRIMARY_TYPE, TYPE_RESOURCE);
                         put(PROP_MIME_TYPE, "text/plain");
                         put(PROP_DATA, inputStream);
                     }});
+                } finally {
+                    inputStream.close();
                 }
                 final boolean deleted = tempFile.delete();
                 final Set<String> propertyNames = job.getPropertyNames();
@@ -324,24 +335,23 @@ public abstract class AbstractJobExecutor<Result> implements JobExecutor, EventH
                         map.put("slingevent:finishedState", event.getProperty("slingevent:finishedState"));
                     } else {
                         //FIXME slingevent:finishedState is never part of the job properties
-                        switch (event.getTopic()) {
-                            case TOPIC_JOB_FINISHED:
-                                map.put("slingevent:finishedState", SUCCEEDED.name());
-                                break;
-                            case TOPIC_JOB_CANCELLED:
-                                if ("execution stopped".equals(event.getProperty("slingevent:resultMessage"))) {
-                                    map.put("slingevent:finishedState", STOPPED.name());
-                                } else {
-                                    map.put("slingevent:finishedState", ERROR.name());
-                                }
-                                break;
-                            case TOPIC_JOB_FAILED:
-                                map.put("slingevent:finishedState", GIVEN_UP.name());
-                                break;
+                        String tpc = event.getTopic();
+                        if (TOPIC_JOB_FINISHED.equals(tpc)) {
+                            map.put("slingevent:finishedState", SUCCEEDED.name());
+                        } else if (TOPIC_JOB_CANCELLED.equals(tpc)) {
+                            if ("execution stopped".equals(event.getProperty("slingevent:resultMessage"))) {
+                                map.put("slingevent:finishedState", STOPPED.name());
+                            } else {
+                                map.put("slingevent:finishedState", ERROR.name());
+                            }
+                        } else if (TOPIC_JOB_FAILED.equals(tpc)) {
+                            map.put("slingevent:finishedState", GIVEN_UP.name());
                         }
                     }
                     adminResolver.commit();
-                } catch (LoginException | PersistenceException e) {
+                } catch (LoginException e) {
+                    LOG.error("Error extending audit log of job execution", e);
+                } catch (PersistenceException e) {
                     LOG.error("Error extending audit log of job execution", e);
                 } finally {
                     if (adminResolver != null) {

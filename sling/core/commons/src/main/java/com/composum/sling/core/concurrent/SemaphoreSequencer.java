@@ -71,7 +71,7 @@ public class SemaphoreSequencer implements SequencerService<SemaphoreSequencer.T
 
     @Activate
     protected void activate(@SuppressWarnings("UnusedParameters") ComponentContext context) {
-        semaphores = new HashMap<>();
+        semaphores = new HashMap<String, Semaphore>();
     }
 
     @Deactivate

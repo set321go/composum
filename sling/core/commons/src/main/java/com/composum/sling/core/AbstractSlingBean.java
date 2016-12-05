@@ -303,7 +303,7 @@ public abstract class AbstractSlingBean implements SlingBean {
     }
 
     public List<String> findPathList(String queryString) throws RepositoryException {
-        List<String> result = new ArrayList<>();
+        List<String> result = new ArrayList<String>();
         NodeIterator iterator = findNodes(queryString);
         while (iterator.hasNext()) {
             result.add(iterator.nextNode().getPath());

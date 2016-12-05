@@ -21,6 +21,8 @@ import org.apache.sling.installer.api.tasks.TransformationResult;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.jcr.Repository;
 import javax.jcr.Session;
@@ -32,8 +34,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Service
 @Component
@@ -60,7 +60,7 @@ public class PackageTransformer implements ResourceTransformer, InstallTaskFacto
                         logger.info("transforming of package '{}' with installation.hint '{}'", title, resource.getDictionary().get(InstallableResource.INSTALLATION_HINT));
                         TransformationResult tr = new TransformationResult();
                         tr.setResourceType("package");
-                        final Map<String, Object> attr = new HashMap<>();
+                        final Map<String, Object> attr = new HashMap<String, Object>();
                         tr.setAttributes(attr);
                         tr.setId(title);
                         Version v = new Version(version.replace('-', '.'));
@@ -133,7 +133,7 @@ public class PackageTransformer implements ResourceTransformer, InstallTaskFacto
                     path = path.substring(root.length());
                 }
 
-                final Map<String, Object> jobProperties = new HashMap<>();
+                final Map<String, Object> jobProperties = new HashMap<String, Object>();
                 jobProperties.put("reference", path);
                 jobProperties.put("operation", "install");
                 jobProperties.put("userid", session.getUserID());
@@ -187,14 +187,20 @@ public class PackageTransformer implements ResourceTransformer, InstallTaskFacto
      * Read the manifest from supplied input stream, which is closed before return.
      */
     private static Manifest getManifest(final RegisteredResource rsrc) throws IOException {
-        try (final InputStream ins = rsrc.getInputStream()) {
+        final InputStream ins = rsrc.getInputStream();
+        try {
             if (ins != null) {
-                try (JarInputStream jis = new JarInputStream(ins)) {
+                JarInputStream jis = new JarInputStream(ins);
+                try {
                     return jis.getManifest();
+                } finally {
+                    jis.close();
                 }
             } else {
                 return null;
             }
+        } finally {
+            ins.close();
         }
     }
 

@@ -264,7 +264,7 @@ public class ResourceFilterTypeAdapter {
                     this.rule = ResourceFilter.FilterSet.Rule.valueOf(reader.nextString());
                     return this.rule;
                 case set:
-                    this.set = new ArrayList<>();
+                    this.set = new ArrayList<ResourceFilter>();
                     Gson gson = registerTypeAdapters(new GsonBuilder()).create();
                     reader.beginArray();
                     while (reader.peek() != JsonToken.END_ARRAY) {

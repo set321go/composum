@@ -173,7 +173,7 @@ public class PropertyUtil {
             throws RepositoryException {
         Session session = node.getSession();
         ValueFactory factory = session.getValueFactory();
-        List<Value> valueList = new ArrayList<>();
+        List<Value> valueList = new ArrayList<Value>();
         for (Object value : values) {
             Value jcrValue = createValue(factory, value, type);
             if (jcrValue != null) {
@@ -204,7 +204,7 @@ public class PropertyUtil {
         if (value != null) {
             switch (type) {
                 case PropertyType.BOOLEAN:
-                    jcrValue = factory.createValue((boolean) value);
+                    jcrValue = factory.createValue((Boolean) value);
                     break;
                 case PropertyType.DATE:
                     jcrValue = factory.createValue((Calendar) value);
@@ -213,10 +213,10 @@ public class PropertyUtil {
                     jcrValue = factory.createValue((BigDecimal) value);
                     break;
                 case PropertyType.DOUBLE:
-                    jcrValue = factory.createValue((double) value);
+                    jcrValue = factory.createValue((Double) value);
                     break;
                 case PropertyType.LONG:
-                    jcrValue = factory.createValue((long) value);
+                    jcrValue = factory.createValue((Long) value);
                     break;
                 default:
                     jcrValue = factory.createValue((String) value, type);

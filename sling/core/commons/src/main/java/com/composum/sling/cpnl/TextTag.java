@@ -24,7 +24,7 @@ public class TextTag extends CpnlBodyTagSupport {
     public static final Map<Type, EscapeFunction> ESCAPE_FUNCTION_MAP;
 
     static {
-        ESCAPE_FUNCTION_MAP = new HashMap<>();
+        ESCAPE_FUNCTION_MAP = new HashMap<Type, EscapeFunction>();
         ESCAPE_FUNCTION_MAP.put(Type.text, new EscapeFunction() {
             @Override
             public Object escape(Object value) {

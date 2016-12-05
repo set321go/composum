@@ -34,7 +34,7 @@ public class ComponentTag extends CpnlBodyTagSupport {
 
     private static Map<Class<? extends SlingBean>, Field[]> fieldCache = new ConcurrentHashMap<Class<? extends SlingBean>, Field[]>();
 
-    public static final Map<String, Integer> SCOPES = new HashMap<>();
+    public static final Map<String, Integer> SCOPES = new HashMap<String, Integer>();
 
     static {
         SCOPES.put("page", PageContext.PAGE_SCOPE);

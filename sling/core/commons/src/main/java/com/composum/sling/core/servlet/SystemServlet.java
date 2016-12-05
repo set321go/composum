@@ -52,7 +52,7 @@ public class SystemServlet extends AbstractServiceServlet {
 
     public enum Operation {propertyTypes, primaryTypes, mixinTypes}
 
-    protected ServletOperationSet<Extension, Operation> operations = new ServletOperationSet<>(Extension.json);
+    protected ServletOperationSet<Extension, Operation> operations = new ServletOperationSet<Extension, Operation>(Extension.json);
 
     @Override
     protected ServletOperationSet getOperations() {
@@ -222,7 +222,7 @@ public class SystemServlet extends AbstractServiceServlet {
 
         public List<String> getNodeTypes(ResourceResolver resolver, String query) throws RepositoryException {
 
-            List<String> nodeTypes = new ArrayList<>();
+            List<String> nodeTypes = new ArrayList<String>();
             Resource typesResource = resolver.getResource(NODE_TYPES_PATH);
             for (Resource type : typesResource.getChildren()) {
                 String name = type.getName();

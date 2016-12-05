@@ -40,7 +40,7 @@ public class Consoles extends ConsolePage {
     public static final Map<String, PreconditionFilter> PRECONDITION_FILTERS;
 
     static {
-        PRECONDITION_FILTERS = new HashMap<>();
+        PRECONDITION_FILTERS = new HashMap<String, PreconditionFilter>();
         PRECONDITION_FILTERS.put(PRECONDITION_CLASS_AVAILABILITY, new ClassAvailabilityFilter());
     }
 
@@ -162,7 +162,7 @@ public class Consoles extends ConsolePage {
 
     public List<Console> getConsoles() {
         if (consoles == null) {
-            consoles = new ArrayList<>();
+            consoles = new ArrayList<Console>();
             findConsoles(consoles, CONTENT_QUERY_APPS);
             findConsoles(consoles, CONTENT_QUERY_LIBS);
             Collections.sort(consoles);

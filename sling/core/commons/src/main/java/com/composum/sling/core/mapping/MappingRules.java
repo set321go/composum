@@ -172,7 +172,7 @@ public class MappingRules {
         }
 
         public DateParser(Iterable<String> datePatterns) {
-            formatList = new ArrayList<>();
+            formatList = new ArrayList<SimpleDateFormat>();
             for (String pattern : datePatterns) {
                 try {
                     formatList.add(new SimpleDateFormat(pattern));

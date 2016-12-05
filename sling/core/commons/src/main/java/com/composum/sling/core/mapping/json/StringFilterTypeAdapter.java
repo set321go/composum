@@ -157,7 +157,7 @@ public class StringFilterTypeAdapter {
         protected Object parseValue(JsonReader reader, String name) throws Exception {
             switch (JsonValues.valueOf(name)) {
                 case patterns:
-                    this.patterns = new ArrayList<>();
+                    this.patterns = new ArrayList<Pattern>();
                     reader.beginArray();
                     while (reader.peek() != JsonToken.END_ARRAY) {
                         this.patterns.add(Pattern.compile(reader.nextString()));

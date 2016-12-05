@@ -27,9 +27,9 @@ public class FileHandle {
     public static final Map<String, Object> CRUD_CONTENT_PROPS;
 
     static {
-        CRUD_FILE_PROPS = new HashMap<>();
+        CRUD_FILE_PROPS = new HashMap<String, Object>();
         CRUD_FILE_PROPS.put(ResourceUtil.PROP_PRIMARY_TYPE, ResourceUtil.TYPE_FILE);
-        CRUD_CONTENT_PROPS = new HashMap<>();
+        CRUD_CONTENT_PROPS = new HashMap<String, Object>();
         CRUD_CONTENT_PROPS.put(ResourceUtil.PROP_PRIMARY_TYPE, ResourceUtil.TYPE_RESOURCE);
     }
 

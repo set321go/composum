@@ -60,7 +60,7 @@ public class JobControlServlet extends AbstractServiceServlet {
 
     public enum Operation {job, jobs, outfile, cleanup}
 
-    protected ServletOperationSet<Extension, Operation> operations = new ServletOperationSet<>(Extension.json);
+    protected ServletOperationSet<Extension, Operation> operations = new ServletOperationSet<Extension, Operation>(Extension.json);
 
     @Reference
     private CoreConfiguration coreConfig;
@@ -125,11 +125,15 @@ public class JobControlServlet extends AbstractServiceServlet {
                 response.setCharacterEncoding("UTF-8");
                 response.setContentType("text/plain;charset=utf-8");
                 if (file.exists()) {
-                    try (final ServletOutputStream outputStream = response.getOutputStream();
-                         final InputStream inputStream = new FileInputStream(file)) {
+                    final ServletOutputStream outputStream = response.getOutputStream();
+                    final InputStream inputStream = new FileInputStream(file);
+                    try {
                         writeStream(ranges, outputStream, inputStream);
                     } catch (FileNotFoundException e) {
                         response.sendError(HttpServletResponse.SC_NOT_FOUND, path);
+                    } finally {
+                        outputStream.close();
+                        inputStream.close();
                     }
                 } else {
                     final ResourceResolver resolver = request.getResourceResolver();
@@ -137,9 +141,13 @@ public class JobControlServlet extends AbstractServiceServlet {
                     if (resources.hasNext()) {
                         final Resource audit = resources.next();
                         final Resource outfileResource = resolver.getResource(audit, path.substring(path.lastIndexOf('/') + 1));
-                        try (final ServletOutputStream outputStream = response.getOutputStream();
-                             final InputStream inputStream = outfileResource.adaptTo(InputStream.class)) {
+                        final ServletOutputStream outputStream = response.getOutputStream();
+                        final InputStream inputStream = outfileResource.adaptTo(InputStream.class);
+                        try {
                             writeStream(ranges, outputStream, inputStream);
+                        } finally {
+                            outputStream.close();
+                            inputStream.close();
                         }
                     }
                 }
@@ -175,28 +183,28 @@ public class JobControlServlet extends AbstractServiceServlet {
         }
 
         private List<Range> decodeRange(String rangeHeader) {
-            List<Range> ranges = new ArrayList<>();
+            List<Range> ranges = new ArrayList<Range>();
             if (StringUtils.isEmpty(rangeHeader)) {
                 ranges.add(new Range());
                 return ranges;
             }
-            String byteRangeSetRegex = "(((?<byteRangeSpec>(?<firstBytePos>\\d+)-(?<lastBytePos>\\d+)?)|(?<suffixByteRangeSpec>-(?<suffixLength>\\d+)))(,|$))";
-            String byteRangesSpecifierRegex = "bytes=(?<byteRangeSet>" + byteRangeSetRegex + "{1,})";
+            String byteRangeSetRegex = "((((\\d+)-(\\d+)?)|(-(\\d+)))(,|$))";
+            String byteRangesSpecifierRegex = "bytes=(" + byteRangeSetRegex + "{1,})";
             Pattern byteRangeSetPattern = Pattern.compile(byteRangeSetRegex);
             Pattern byteRangesSpecifierPattern = Pattern.compile(byteRangesSpecifierRegex);
             Matcher byteRangesSpecifierMatcher = byteRangesSpecifierPattern.matcher(rangeHeader);
             if (byteRangesSpecifierMatcher.matches()) {
-                String byteRangeSet = byteRangesSpecifierMatcher.group("byteRangeSet");
+                String byteRangeSet = byteRangesSpecifierMatcher.group(1);
                 Matcher byteRangeSetMatcher = byteRangeSetPattern.matcher(byteRangeSet);
                 while (byteRangeSetMatcher.find()) {
                     Range range = new Range();
-                    if (byteRangeSetMatcher.group("byteRangeSpec") != null) {
-                        String start = byteRangeSetMatcher.group("firstBytePos");
-                        String end = byteRangeSetMatcher.group("lastBytePos");
+                    if (byteRangeSetMatcher.group(1) != null) {
+                        String start = byteRangeSetMatcher.group(2);
+                        String end = byteRangeSetMatcher.group(3);
                         range.start = Integer.valueOf(start);
                         range.end = end == null ? null : Integer.valueOf(end);
-                    } else if (byteRangeSetMatcher.group("suffixByteRangeSpec") != null) {
-                        range.suffixLength = Integer.valueOf(byteRangeSetMatcher.group("suffixLength"));
+                    } else if (byteRangeSetMatcher.group(4) != null) {
+                        range.suffixLength = Integer.valueOf(byteRangeSetMatcher.group(5));
                     } else {
                         return Collections.emptyList();
                     }
@@ -221,7 +229,7 @@ public class JobControlServlet extends AbstractServiceServlet {
             JobManager.QueryType selector = RequestUtil.getSelector(request, JobManager.QueryType.ALL);
             boolean useAudit = (selector == JobManager.QueryType.ALL || selector == JobManager.QueryType.HISTORY || selector == JobManager.QueryType.SUCCEEDED);
             Collection<Job> jobs = jobManager.findJobs(selector, topic.getString(), 0);
-            List<JobFacade> allJobs = new ArrayList<>();
+            List<JobFacade> allJobs = new ArrayList<JobFacade>();
             for (Job job : jobs) {
                 allJobs.add(new JobFacade.EventJob(job));
             }
@@ -233,7 +241,8 @@ public class JobControlServlet extends AbstractServiceServlet {
                     }
                 }
             }
-            try (final JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response)) {
+            final JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
+            try {
                 Collections.sort(allJobs, new Comparator<JobFacade>() {
                     @Override
                     public int compare(JobFacade o1, JobFacade o2) {
@@ -252,6 +261,8 @@ public class JobControlServlet extends AbstractServiceServlet {
                     }
                 }
                 jsonWriter.endArray();
+            } finally {
+                jsonWriter.close();
             }
         }
 
@@ -276,8 +287,11 @@ public class JobControlServlet extends AbstractServiceServlet {
             String jobId = path.substring(1);
             JobFacade job = JobUtil.getJobById(jobManager, request.getResourceResolver(), jobId);
             if (job != null) {
-                try (final JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response)) {
+                final JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
+                try {
                     job2json(jsonWriter, job);
+                } finally {
+                    jsonWriter.close();
                 }
             }
         }
@@ -313,7 +327,7 @@ public class JobControlServlet extends AbstractServiceServlet {
                 } else {
                     final String allAuditsQuery = "/jcr:root/var/audit/jobs/" + topic.getString().replaceAll("/", ".") + "//*[@slingevent:eventId]";
                     final Iterator<Resource> allAuditResources = resolver.findResources(allAuditsQuery, "xpath");
-                    final Set<String> referencePaths = new HashSet<>();
+                    final Set<String> referencePaths = new HashSet<String>();
                     while (allAuditResources.hasNext()) {
                         final Resource auditResource = allAuditResources.next();
                         final String referencePath = auditResource.getParent().getPath();
@@ -333,7 +347,7 @@ public class JobControlServlet extends AbstractServiceServlet {
         }
 
         private void removeAudits(ResourceResolver resolver, int keep, Iterator<Resource> auditResources) throws PersistenceException {
-            final List<JobFacade.AuditJob> allAuditJobs = new ArrayList<>();
+            final List<JobFacade.AuditJob> allAuditJobs = new ArrayList<JobFacade.AuditJob>();
             while (auditResources.hasNext()) {
                 final Resource auditResource = auditResources.next();
                 final JobFacade.AuditJob auditJob = new JobFacade.AuditJob(auditResource);
@@ -375,12 +389,15 @@ public class JobControlServlet extends AbstractServiceServlet {
                     }
                 }
                 final boolean b = new File(outfile).delete();
-                try (final JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response)) {
+                final JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
+                try {
                     jsonWriter
                             .beginObject()
                             .name("audit").value(auditResourceDeleted)
                             .name("outfile").value(b)
                             .endObject();
+                } finally {
+                    jsonWriter.close();
                 }
             } catch (final Exception ex) {
                 LOG.error(ex.getMessage(), ex);
@@ -406,7 +423,7 @@ public class JobControlServlet extends AbstractServiceServlet {
             final ResourceResolver resolver = request.getResourceResolver();
             final JackrabbitSession session = (JackrabbitSession) resolver.adaptTo(Session.class);
             String topic = "";
-            Map<String, Object> properties = new HashMap<>();
+            Map<String, Object> properties = new HashMap<String, Object>();
             @SuppressWarnings("unchecked")
             Map<String, String[]> parameters = request.getParameterMap();
             for (Map.Entry<String, String[]> parameter : parameters.entrySet()) {
@@ -424,8 +441,11 @@ public class JobControlServlet extends AbstractServiceServlet {
             properties.put("userid", session.getUserID());
             JobUtil.buildOutfileName(properties);
             Job job = jobManager.addJob(topic, properties);
-            try (final JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response)) {
+            final JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
+            try {
                 job2json(jsonWriter, new JobFacade.EventJob(job));
+            } finally {
+                jsonWriter.close();
             }
         }
     }

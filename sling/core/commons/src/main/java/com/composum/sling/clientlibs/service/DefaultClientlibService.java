@@ -63,7 +63,7 @@ public class DefaultClientlibService implements ClientlibService {
 
 
     static {
-        CRUD_CACHE_FOLDER_PROPS = new HashMap<>();
+        CRUD_CACHE_FOLDER_PROPS = new HashMap<String, Object>();
         CRUD_CACHE_FOLDER_PROPS.put(ResourceUtil.PROP_PRIMARY_TYPE, "sling:Folder");
     }
 
@@ -159,7 +159,7 @@ public class DefaultClientlibService implements ClientlibService {
                                               final Clientlib clientlib, String encoding)
             throws IOException, RepositoryException, LoginException {
 
-        final Map<String, Object> hints = new HashMap<>();
+        final Map<String, Object> hints = new HashMap<String, Object>();
 
         encoding = adjustEncoding(encoding);
         String cachePath = getCachePath(clientlib, encoding);
@@ -206,7 +206,9 @@ public class DefaultClientlibService implements ClientlibService {
                             public void run() {
                                 try {
                                     clientlib.processContent(outputStream, processor, context);
-                                } catch (IOException | RepositoryException ex) {
+                                } catch (RepositoryException ex) {
+                                    LOG.error(ex.getMessage(), ex);
+                                } catch (IOException ex) {
                                     LOG.error(ex.getMessage(), ex);
                                 }
                             }
@@ -327,11 +329,11 @@ public class DefaultClientlibService implements ClientlibService {
         executorService = new ThreadPoolExecutor(
                 clientlibConfig.getThreadPoolMin(), clientlibConfig.getThreadPoolMax(),
                 200L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
-        rendererMap = new EnumMap<>(Clientlib.Type.class);
+        rendererMap = new EnumMap<Clientlib.Type, ClientlibRenderer>(Clientlib.Type.class);
         rendererMap.put(Clientlib.Type.js, javascriptProcessor);
         rendererMap.put(Clientlib.Type.css, cssProcessor);
         rendererMap.put(Clientlib.Type.link, linkRenderer);
-        processorMap = new EnumMap<>(Clientlib.Type.class);
+        processorMap = new EnumMap<Clientlib.Type, ClientlibProcessor>(Clientlib.Type.class);
         processorMap.put(Clientlib.Type.js, javascriptProcessor);
         processorMap.put(Clientlib.Type.css, mapClientlibURLs()
                 ? new ProcessorPipeline(new CssUrlMapper(), cssProcessor)

@@ -41,8 +41,11 @@ public class ResponseUtil {
     }
 
     public static void writeEmptyArray(SlingHttpServletResponse response) throws IOException {
-        try (final JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response)) {
+        final JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
+        try {
             jsonWriter.beginArray().endArray();
+        } finally {
+            jsonWriter.close();
         }
     }
 

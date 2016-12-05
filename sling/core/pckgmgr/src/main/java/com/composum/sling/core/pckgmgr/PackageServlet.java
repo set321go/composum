@@ -285,7 +285,7 @@ public class PackageServlet extends AbstractServiceServlet {
     protected class UpdateOperation implements ServletOperation {
 
         protected Map<String, Object> getParameters(SlingHttpServletRequest request) throws IOException {
-            Map<String, Object> result = new HashMap<>();
+            Map<String, Object> result = new HashMap<String, Object>();
             RequestParameterMap parameters = request.getRequestParameterMap();
             for (Map.Entry<String, RequestParameter[]> parameter : parameters.entrySet()) {
                 String key = parameter.getKey();
@@ -361,7 +361,7 @@ public class PackageServlet extends AbstractServiceServlet {
 
         @Override
         protected Map<String, Object> getParameters(SlingHttpServletRequest request) throws IOException {
-            Map<String, Object> result = new HashMap<>();
+            Map<String, Object> result = new HashMap<String, Object>();
             JsonReader reader = new JsonReader(new InputStreamReader(request.getInputStream(), "UTF-8"));
             reader.setLenient(true);
             reader.beginObject();
@@ -495,7 +495,7 @@ public class PackageServlet extends AbstractServiceServlet {
                 path = path.substring(root.length());
             }
 
-            Map<String, Object> jobProperties = new HashMap<>();
+            Map<String, Object> jobProperties = new HashMap<String, Object>();
             jobProperties.put("reference", path);
             jobProperties.put("operation", "install");
             jobProperties.put("userid", session.getUserID());
@@ -562,7 +562,8 @@ public class PackageServlet extends AbstractServiceServlet {
                 JcrPackageManager manager = PackageUtil.createPackageManager(request);
                 final List<JcrPackage> jcrPackages = manager.listPackages();
                 response.setStatus(HttpServletResponse.SC_OK);
-                try (Writer writer = response.getWriter()) {
+                Writer writer = response.getWriter();
+                try {
                     writer.append("<repo>");
                     writer.append(createRequestElement("ls", "", ""));
                     writer.append("<response>");
@@ -576,6 +577,8 @@ public class PackageServlet extends AbstractServiceServlet {
                     writer.append(createStatusElement("200", "ok"));
                     writer.append("</response>");
                     writer.append("</repo>");
+                } finally {
+                    writer.close();
                 }
             }
         }
@@ -605,7 +608,8 @@ public class PackageServlet extends AbstractServiceServlet {
                     }
                 }
                 response.setStatus(HttpServletResponse.SC_OK);
-                try (Writer writer = response.getWriter()) {
+                Writer writer = response.getWriter();
+                try {
                     writer.append("<repo>");
                     writer.append(createRequestElement("rm", name, group));
                     if (found) {
@@ -614,6 +618,8 @@ public class PackageServlet extends AbstractServiceServlet {
                         writer.append(createResponseElement("500", "Package '" + group + ":" + name + "' does not exist."));
                     }
                     writer.append("</repo>");
+                } finally {
+                    writer.close();
                 }
             }
 
@@ -639,7 +645,7 @@ public class PackageServlet extends AbstractServiceServlet {
                         path = path.substring(root.length());
                     }
 
-                    Map<String, Object> jobProperties = new HashMap<>();
+                    Map<String, Object> jobProperties = new HashMap<String, Object>();
                     jobProperties.put("reference", path);
                     jobProperties.put("operation", getOperation());
                     jobProperties.put("userid", session.getUserID());
@@ -648,7 +654,8 @@ public class PackageServlet extends AbstractServiceServlet {
                     final JobMonitor.IsDone isDone = new JobMonitor.IsDone(jobManager, resolver, job.getId(), JOB_IDLE_TIMEOUT);
                     if (isDone.call()) {
                         response.setStatus(HttpServletResponse.SC_OK);
-                        try (Writer writer = response.getWriter()) {
+                        Writer writer = response.getWriter();
+                        try {
                             writer.append("<repo>");
                             writer.append(createRequestElement(getCommand(), name, group));
                             if (isDone.succeeded()) {
@@ -657,23 +664,31 @@ public class PackageServlet extends AbstractServiceServlet {
                                 writer.append(createResponseElement("500", getOperation() + " does not succeed"));
                             }
                             writer.append("</repo>");
+                        } finally {
+                            writer.close();
                         }
                     } else {
                         response.setStatus(HttpServletResponse.SC_OK);
-                        try (Writer writer = response.getWriter()) {
+                        Writer writer = response.getWriter();
+                        try {
                             writer.append("<repo>");
                             writer.append(createRequestElement(getCommand(), name, group));
                             writer.append(createResponseElement("500", "nok"));
                             writer.append("</repo>");
+                        } finally {
+                            writer.close();
                         }
                     }
                 } else {
                     response.setStatus(HttpServletResponse.SC_OK);
-                    try (Writer writer = response.getWriter()) {
+                    Writer writer = response.getWriter();
+                    try {
                         writer.append("<repo>");
                         writer.append(createRequestElement(getCommand(), name, group));
                         writer.append(createResponseElement("500", "Package '" + group + ":" + name + "' does not exist"));
                         writer.append("</repo>");
+                    } finally {
+                        writer.close();
                     }
                 }
             }
@@ -746,7 +761,8 @@ public class PackageServlet extends AbstractServiceServlet {
                                         JcrPackageManager manager, JcrPackage jcrPackage, JobMonitor jobMonitor)
                 throws RepositoryException, IOException {
             response.setStatus(HttpServletResponse.SC_OK);
-            try (Writer writer = response.getWriter()) {
+            Writer writer = response.getWriter();
+            try {
                 writer.append("<repo>");
 //                writer.append("<crx version=\"\" user=\"\" workspace=\"\">");
 //                writer.append("<request>");
@@ -766,6 +782,8 @@ public class PackageServlet extends AbstractServiceServlet {
                 writer.append("</response>");
 //                writer.append("</crx>");
                 writer.append("</repo>");
+            } finally {
+                writer.close();
             }
         }
 
@@ -895,13 +913,10 @@ public class PackageServlet extends AbstractServiceServlet {
                 if (ruleTypes != null && ruleExpressions != null && ruleTypes.length == ruleExpressions.length) {
                     for (int i = 0; i < ruleTypes.length; i++) {
                         if (StringUtils.isNotBlank(ruleExpressions[i])) {
-                            switch (ruleTypes[i]) {
-                                case "include":
-                                    filter.addInclude(new DefaultPathFilter(ruleExpressions[i]));
-                                    break;
-                                case "exclude":
-                                    filter.addExclude(new DefaultPathFilter(ruleExpressions[i]));
-                                    break;
+                            if ("include".equals(ruleTypes[i])) {
+                                filter.addInclude(new DefaultPathFilter(ruleExpressions[i]));
+                            } else if ("exclude".equals(ruleTypes[i])) {
+                                filter.addExclude(new DefaultPathFilter(ruleExpressions[i]));
                             }
                         }
                     }
@@ -1045,13 +1060,10 @@ public class PackageServlet extends AbstractServiceServlet {
         JsonToken token;
         while (reader.hasNext() && (token = reader.peek()) == JsonToken.NAME) {
             String name = reader.nextName();
-            switch (name) {
-                case "definition":
-                    fromJson(reader, jcrPackage.getDefinition());
-                    break;
-                default:
-                    reader.skipValue();
-                    break;
+            if ("definition".equals(name)) {
+                fromJson(reader, jcrPackage.getDefinition());
+            } else {
+                reader.skipValue();
             }
         }
         reader.endObject();
@@ -1063,27 +1075,24 @@ public class PackageServlet extends AbstractServiceServlet {
         JsonToken token;
         while (reader.hasNext() && (token = reader.peek()) == JsonToken.NAME) {
             String name = reader.nextName();
-            switch (name) {
-                case "filter":
-                    DefaultWorkspaceFilter filter = new DefaultWorkspaceFilter();
-                    PathFilterSet pathFilterSet = new PathFilterSet();
-                    filter.add(pathFilterSet);
-                    break;
-                default:
-                    switch (reader.peek()) {
-                        case STRING:
-                            String strVal = reader.nextString();
-                            definition.set(name, strVal, AUTO_SAVE);
-                            break;
-                        case BOOLEAN:
-                            Boolean boolVal = reader.nextBoolean();
-                            definition.set(name, boolVal, AUTO_SAVE);
-                            break;
-                        default:
-                            reader.skipValue();
-                            break;
-                    }
-                    break;
+            if ("filter".equals(name)) {
+                DefaultWorkspaceFilter filter = new DefaultWorkspaceFilter();
+                PathFilterSet pathFilterSet = new PathFilterSet();
+                filter.add(pathFilterSet);
+            } else {
+                switch (reader.peek()) {
+                    case STRING:
+                        String strVal = reader.nextString();
+                        definition.set(name, strVal, AUTO_SAVE);
+                        break;
+                    case BOOLEAN:
+                        Boolean boolVal = reader.nextBoolean();
+                        definition.set(name, boolVal, AUTO_SAVE);
+                        break;
+                    default:
+                        reader.skipValue();
+                        break;
+                }
             }
         }
         reader.endObject();

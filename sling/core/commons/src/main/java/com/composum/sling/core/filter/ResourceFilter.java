@@ -492,7 +492,7 @@ public interface ResourceFilter {
          */
         public FilterSet(Rule rule, ResourceFilter... filters) {
             this.rule = rule;
-            this.set = new ArrayList<>();
+            this.set = new ArrayList<ResourceFilter>();
             Collections.addAll(this.set, filters);
         }
 

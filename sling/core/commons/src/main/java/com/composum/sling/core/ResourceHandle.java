@@ -414,7 +414,7 @@ public class ResourceHandle extends ResourceWrapper {
      * retrieves all children of a type
      */
     public List<ResourceHandle> getChildrenByType(final String type) {
-        final ArrayList<ResourceHandle> children = new ArrayList<>();
+        final ArrayList<ResourceHandle> children = new ArrayList<ResourceHandle>();
         if (this.isValid()) {
             for (final Resource child : this.resource.getChildren()) {
                 ResourceHandle handle = ResourceHandle.use(child);
@@ -430,7 +430,7 @@ public class ResourceHandle extends ResourceWrapper {
      * retrieves all children of a sling:resourceType
      */
     public List<ResourceHandle> getChildrenByResourceType(final String resourceType) {
-        final ArrayList<ResourceHandle> children = new ArrayList<>();
+        final ArrayList<ResourceHandle> children = new ArrayList<ResourceHandle>();
         if (this.isValid()) {
             for (final Resource child : this.resource.getChildren()) {
                 ResourceHandle handle = ResourceHandle.use(child);

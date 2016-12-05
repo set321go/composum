@@ -40,7 +40,7 @@ public class PackageManagerBean extends ConsoleSlingBean {
     }
 
     public List<PackageUtil.PackageItem> getCurrentGroupPackages() {
-        List<PackageUtil.PackageItem> items = new ArrayList<>();
+        List<PackageUtil.PackageItem> items = new ArrayList<PackageUtil.PackageItem>();
         try {
             PackageUtil.TreeNode treeNode = PackageUtil.getTreeNode(request);
             for (PackageUtil.TreeItem item : treeNode) {

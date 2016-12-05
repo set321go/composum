@@ -33,7 +33,7 @@ public class NodeFactory {
     protected Map<String, TypeStrategy> strategyMap;
 
     public NodeFactory() {
-        strategyMap = new HashMap<>();
+        strategyMap = new HashMap<String, TypeStrategy>();
         strategyMap.put(ResourceUtil.TYPE_OAKINDEX, new OakIndexStrategy());
         strategyMap.put(ResourceUtil.TYPE_FILE, new NtFileStrategy());
         strategyMap.put(ResourceUtil.TYPE_LINKED_FILE, new NtLinkedFileStrategy());
