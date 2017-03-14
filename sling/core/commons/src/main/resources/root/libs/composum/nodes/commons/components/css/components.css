@@ -1,3 +1,6 @@
+.form-group.checkbox {
+    margin-top: 32px;
+}
 
 .radio-group-widget.form-control {
     border: none;
@@ -58,6 +61,11 @@
  * Multi Form Widget
  */
 
+.multi-form-content {
+    overflow: visible; /* scroll; is truncating a possible typeahead (!) */
+/*  max-height: 360px; */
+}
+
 .multi-form-item {
     position: relative;
     display: inline-block;
@@ -83,6 +91,31 @@
     padding-top: 2px;
     padding-left: 25px;
     border: none;
+}
+
+/**
+ * SplitPane
+ */
+
+.split-pane > .split-pane-divider:after {
+    font-family: FontAwesome;
+    position: absolute;
+    background: none;
+    font-size: 120%;
+    opacity: 0.4;
+}
+
+.split-pane.vertical-split > .split-pane-divider:after {
+    content: '\f141';
+    left: 50%;
+    top: 2px;
+    line-height: 15px;
+}
+
+.split-pane.horizontal-split > .split-pane-divider:after {
+    content: '\f142';
+    top: 50%;
+    left: 6px;
 }
 
 /**
@@ -194,6 +227,9 @@
 
 .modal-dialog .form-group .checkbox-widget {
     box-shadow: none;
+}
+
+.modal-dialog .form-group > .form-control.checkbox-widget {
     margin-top: 0;
 }
 

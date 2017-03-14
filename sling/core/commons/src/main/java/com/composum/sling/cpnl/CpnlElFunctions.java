@@ -1,14 +1,33 @@
 package com.composum.sling.cpnl;
 
+import com.composum.sling.core.RequestBundle;
 import com.composum.sling.core.util.LinkUtil;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.MissingResourceException;
 
 /**
  * the set of taglib JSP EL functions
  */
 public class CpnlElFunctions {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CpnlElFunctions.class);
+
+    public static String i18n(SlingHttpServletRequest request, String text) {
+        String translated = null;
+        try {
+            translated = RequestBundle.get(request).getString(text);
+        } catch (MissingResourceException mrex) {
+            if (LOG.isInfoEnabled()) {
+                LOG.info(mrex.toString());
+            }
+        }
+        return translated != null ? translated : text;
+    }
 
     /**
      * Returns the repository path of a child of a resource.
@@ -53,6 +72,39 @@ public class CpnlElFunctions {
      */
     public static String unmappedUrl(SlingHttpServletRequest request, String path) {
         return LinkUtil.getUnmappedUrl(request, path);
+    }
+
+    /**
+     * Builds an external (full qualified) URL for a repository path using the LinkUtil.getURL() method.
+     *
+     * @param request the current request (domain host hint)
+     * @param path    the repository path
+     * @return the URL built in the context of the requested domain host
+     */
+    public static String externalUrl(SlingHttpServletRequest request, String path) {
+        return LinkUtil.getAbsoluteUrl(request, LinkUtil.getUrl(request, path));
+    }
+
+    /**
+     * Builds an external (full qualified) URL for a repository path using the LinkUtil.getMappedURL() method.
+     *
+     * @param request the current request (domain host hint)
+     * @param path    the repository path
+     * @return the URL built in the context of the requested domain host
+     */
+    public static String mappedExternalUrl(SlingHttpServletRequest request, String path) {
+        return LinkUtil.getAbsoluteUrl(request, LinkUtil.getMappedUrl(request, path));
+    }
+
+    /**
+     * Builds an external (full qualified) URL for a repository path using the LinkUtil.getUnmappedURL() method.
+     *
+     * @param request the current request (domain host hint)
+     * @param path    the repository path
+     * @return the URL built in the context of the requested domain host
+     */
+    public static String unmappedExternalUrl(SlingHttpServletRequest request, String path) {
+        return LinkUtil.getAbsoluteUrl(request, LinkUtil.getUnmappedUrl(request, path));
     }
 
     /**

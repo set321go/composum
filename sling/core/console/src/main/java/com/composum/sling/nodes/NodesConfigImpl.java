@@ -2,10 +2,10 @@ package com.composum.sling.nodes;
 
 import com.composum.sling.core.filter.ResourceFilter;
 import com.composum.sling.core.mapping.jcr.ResourceFilterMapping;
-import com.composum.sling.core.servlet.AbstractServiceServlet;
 import com.composum.sling.nodes.servlet.NodeServlet;
 import com.composum.sling.nodes.servlet.PropertyServlet;
 import com.composum.sling.nodes.servlet.SecurityServlet;
+import com.composum.sling.nodes.servlet.SourceServlet;
 import com.composum.sling.nodes.servlet.VersionServlet;
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
@@ -16,6 +16,7 @@ import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.osgi.service.component.ComponentContext;
 
+import javax.servlet.Servlet;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
@@ -111,6 +112,14 @@ public class NodesConfigImpl implements NodesConfiguration {
     private ResourceFilter orderableNodesFilter;
 
     @Property(
+            name = SOURCE_NODES_FILTER_KEY,
+            label = "XML Source Nodes Filter",
+            description = "the filter configuration for the source export of the repository content (Source Servlet)",
+            value = "PrimaryType(-'^cpp:(Statistics)$,^rep:(.+)$')"
+    )
+    private ResourceFilter sourceNodesFilter;
+
+    @Property(
             name = PACKAGE_SERVLET_ENABLED,
             label = "Package Servlet",
             description = "the general on/off switch for the services of the Package Servlet",
@@ -127,7 +136,7 @@ public class NodesConfigImpl implements NodesConfiguration {
     private boolean securityServletEnabled;
 
     @Property(
-            name = "node.servlet.enabled",
+            name = NODE_SERVLET_ENABLED,
             label = "Node Servlet",
             description = "the general on/off switch for the services of the Node Servlet",
             boolValue = true
@@ -135,7 +144,7 @@ public class NodesConfigImpl implements NodesConfiguration {
     private boolean nodeServletEnabled;
 
     @Property(
-            name = "property.servlet.enabled",
+            name = PROPERTY_SERVLET_ENABLED,
             label = "Property Servlet",
             description = "the general on/off switch for the services of the Property Servlet",
             boolValue = true
@@ -143,16 +152,23 @@ public class NodesConfigImpl implements NodesConfiguration {
     private boolean propertyServletEnabled;
 
     @Property(
-            name = "version.servlet.enabled",
+            name = VERSION_SERVLET_ENABLED,
             label = "Version Servlet",
             description = "the general on/off switch for the services of the Version Servlet",
             boolValue = true
     )
     private boolean versionServletEnabled;
 
-    public static final String USER_MANAGEMENT_SERVLET_ENABLED = "usermanagement.servlet.enabled";
     @Property(
-            name = "usermanagement.servlet.enabled",
+            name = SOURCE_SERVLET_ENABLED,
+            label = "Source Servlet",
+            description = "the general on/off switch for the services of the Source Servlet",
+            boolValue = true
+    )
+    private boolean sourceServletEnabled;
+
+    @Property(
+            name = USER_MANAGEMENT_SERVLET_ENABLED,
             label = "User Management Servlet",
             description = "the general on/off switch for the services of the User Management Servlet",
             boolValue = true
@@ -162,7 +178,7 @@ public class NodesConfigImpl implements NodesConfiguration {
     private Map<String, Boolean> enabledServlets;
 
     @Override
-    public boolean isEnabled(AbstractServiceServlet servlet) {
+    public boolean isEnabled(Servlet servlet) {
         Boolean result = enabledServlets.get(servlet.getClass().getSimpleName());
         return result != null ? result : false;
     }
@@ -207,6 +223,11 @@ public class NodesConfigImpl implements NodesConfiguration {
         return orderableNodesFilter;
     }
 
+    @Override
+    public ResourceFilter getSourceNodesFilter() {
+        return sourceNodesFilter;
+    }
+
     public Dictionary getProperties() {
         return properties;
     }
@@ -234,6 +255,8 @@ public class NodesConfigImpl implements NodesConfiguration {
                 (String) properties.get(REFERENCEABLE_NODES_FILTER_KEY));
         orderableNodesFilter = ResourceFilterMapping.fromString(
                 (String) properties.get(ORDERABLE_NODES_FILTER_KEY));
+        sourceNodesFilter = ResourceFilterMapping.fromString(
+                (String) properties.get(SOURCE_NODES_FILTER_KEY));
         enabledServlets = new HashMap<String, Boolean>();
         enabledServlets.put("PackageServlet", packageServletEnabled =
                 (Boolean) properties.get(PACKAGE_SERVLET_ENABLED));
@@ -245,6 +268,8 @@ public class NodesConfigImpl implements NodesConfiguration {
                 (Boolean) properties.get(PROPERTY_SERVLET_ENABLED));
         enabledServlets.put(VersionServlet.class.getSimpleName(), versionServletEnabled =
                 (Boolean) properties.get(VERSION_SERVLET_ENABLED));
+        enabledServlets.put(SourceServlet.class.getSimpleName(), sourceServletEnabled =
+                (Boolean) properties.get(SOURCE_SERVLET_ENABLED));
         enabledServlets.put("UserManagementServlet", userManagementServletEnabled =
                 (Boolean) properties.get(USER_MANAGEMENT_SERVLET_ENABLED));
     }

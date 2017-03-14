@@ -441,7 +441,7 @@
 }
 
 #browser-view .bootstrap-table table th .th-inner {
-    line-height: normal;
+    line-height: 23px;
     padding: 0;
 }
 
@@ -450,12 +450,12 @@
     font-size: 14px;
     font-weight: normal;
     line-height: 25px;
-    padding: 2px 5px;
+    padding: 2px 5px !important;
 }
 
 #browser-view .bootstrap-table table th.bs-checkbox,
 #browser-view .bootstrap-table table td.bs-checkbox {
-    padding: 8px 5px 8px 6px;
+    padding: 8px 5px 8px 6px !important;
 }
 
 #browser-view .bootstrap-table thead tr {
@@ -635,6 +635,14 @@
     min-width: 100px;
 }
 
+#browser-view .image.detail-panel .detail-toolbar .assetmgr {
+    display: none;
+}
+
+#browser-view .image.detail-panel.asset .detail-toolbar .assetmgr {
+    display: inherit;
+}
+
 /**
  * Video view
  */
@@ -697,16 +705,13 @@
     margin-bottom: 15px;
 }
 
-#browser-view .node-view-panel .node-view-content .script .split-pane .split-pane-divider {
+#browser-view .node-view-panel .node-view-content .script .split-pane > .split-pane-divider {
     bottom: 120px;
+    background: #e4e4e4;
 }
 
 #browser-view .node-view-panel .node-view-content .script .split-pane .bottom-pane {
     height: 120px;
-}
-
-#browser-view .node-view-panel .node-view-content .script .split-pane .split-pane-divider {
-    background-color: #e4e4e4;
 }
 
 #browser-view .node-view-panel .node-view-content .script .detail-content .log-area {
@@ -835,21 +840,24 @@
 
 .acl.detail-panel .vertical-split > .split-pane-divider {
     top: 200px;
-    height: 30px;
-    background-color: #ececec;
+    height: 27px;
+    background: #e4e4e4;
+}
+
+.acl.detail-panel .vertical-split > .split-pane-divider:before {
+    display: inline-block;
+    content: 'Effective Policies';
+    padding: 4px 5px;
+}
+
+.acl.detail-panel .vertical-split > .split-pane-divider:after {
+    line-height: 26px;
 }
 
 .acl.detail-panel .vertical-split > .bottom-pane {
     top: 200px;
     margin-top: 30px;
     min-height: 87px;
-}
-
-.acl.detail-panel .vertical-split > .split-pane-divider h4 {
-    position: absolute;
-    padding: 4px 5px;
-    font-weight: normal;
-    font-size: 100%;
 }
 
 .acl.detail-panel .bootstrap-table .fixed-table-container {

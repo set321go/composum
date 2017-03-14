@@ -101,7 +101,11 @@ public class JsonUtil {
             case BOOLEAN:
                 return reader.nextBoolean();
             case NUMBER:
-                return reader.nextLong();
+                try {
+                    return reader.nextLong();
+                } catch (NumberFormatException nfex) {
+                    return reader.nextDouble();
+                }
             case BEGIN_ARRAY:
                 ArrayList<Object> list = new ArrayList<Object>();
                 reader.beginArray();
@@ -142,29 +146,34 @@ public class JsonUtil {
      * Transforms an object into a JSON object (stream).
      */
     public static void jsonValue(JsonWriter writer, Object value) throws IOException {
-        if (value instanceof Map) {
-            jsonMap(writer, (Map<String, Object>) value);
-        } else if (value instanceof Collection) {
-            writer.beginArray();
-            Iterator iterator = ((Collection) value).iterator();
-            while (iterator.hasNext()) {
-                jsonValue(writer, iterator.next());
-            }
-            writer.endArray();
-        } else if (value instanceof Object[]) {
-            writer.beginArray();
-            for (Object val : ((Object[]) value)) {
-                jsonValue(writer, val);
-            }
-            writer.endArray();
-        } else if (value instanceof Boolean) {
-            writer.value((Boolean) value);
-        } else if (value instanceof Long) {
-            writer.value((Long) value);
-        } else if (value != null) {
-            writer.value(value.toString());
-        } else {
+        if (value == null) {
             writer.nullValue();
+        } else {
+            if (value instanceof Map) {
+                jsonMap(writer, (Map<String, Object>) value);
+            } else if (value instanceof Collection) {
+                writer.beginArray();
+                for (Object val : ((Collection) value)) {
+                    jsonValue(writer, val);
+                }
+                writer.endArray();
+            } else if (value instanceof Object[]) {
+                writer.beginArray();
+                for (Object val : ((Object[]) value)) {
+                    jsonValue(writer, val);
+                }
+                writer.endArray();
+            } else if (value instanceof Boolean) {
+                writer.value((Boolean) value);
+            } else if (value instanceof Long) {
+                writer.value((Long) value);
+            } else if (value instanceof Double) {
+                writer.value((Double) value);
+            } else if (value instanceof Number) {
+                writer.value((Number) value);
+            } else {
+                writer.value(value.toString());
+            }
         }
     }
 

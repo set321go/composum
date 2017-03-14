@@ -31,10 +31,15 @@ public class ResourceUtil extends org.apache.sling.api.resource.ResourceUtil {
     public static final String CONTENT_NODE = "jcr:content";
 
     public static final String TYPE_OAKINDEX = "oak:QueryIndexDefinition";
+    public static final String TYPE_FOLDER = "nt:folder";
     public static final String TYPE_FILE = "nt:file";
     public static final String TYPE_LINKED_FILE = "nt:linkedFile";
     public static final String TYPE_RESOURCE = "nt:resource";
     public static final String TYPE_UNSTRUCTURED = "nt:unstructured";
+
+    public static final String TYPE_SLING_RESOURCE = "sling:Resource";
+    public static final String TYPE_SLING_FOLDER = "sling:Folder";
+    public static final String TYPE_SLING_ORDERED_FOLDER = "sling:OrderedFolder";
 
     public static final String TYPE_LOCKABLE = "mix:lockable";
     public static final String TYPE_ORDERABLE = "mix:orderable";
@@ -51,6 +56,55 @@ public class ResourceUtil extends org.apache.sling.api.resource.ResourceUtil {
     public static final String PROP_JCR_CONTENT = "jcr:content";
     public static final String PROP_LAST_MODIFIED = "jcr:lastModified";
     public static final String PROP_FILE_REFERENCE = "fileReference";
+
+    public static int getIndexOfSameType(Resource resource) {
+        if (resource != null) {
+            String name = resource.getName();
+            String type = resource.getResourceType();
+            Resource parent = resource.getParent();
+            if (parent != null) {
+                int index = 0;
+                for (Resource child : parent.getChildren()) {
+                    if (type == null || child.isResourceType(type)) {
+                        if (name.equals(child.getName())) {
+                            return index;
+                        }
+                        index++;
+                    }
+                }
+            }
+        }
+        return -1;
+    }
+
+    public static Resource getNextOfSameType(Resource resource, boolean wrapAround) {
+        if (resource != null) {
+            String name = resource.getName();
+            String type = resource.getResourceType();
+            Resource parent = resource.getParent();
+            if (parent != null) {
+                boolean returnNext = false;
+                for (Resource child : parent.getChildren()) {
+                    if (type == null || child.isResourceType(type)) {
+                        if (returnNext) {
+                            return child;
+                        }
+                        if (name.equals(child.getName())) {
+                            returnNext = true;
+                        }
+                    }
+                }
+                if (returnNext && wrapAround) {
+                    for (Resource child : parent.getChildren()) {
+                        if (type == null || child.isResourceType(type)) {
+                            return child;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
 
     public static String getNameExtension(Resource resource) {
         String extension = null;
@@ -203,6 +257,14 @@ public class ResourceUtil extends org.apache.sling.api.resource.ResourceUtil {
             }
         }
         return false;
+    }
+
+    public static String[] splitPathAndName(String path) {
+        String[] result = new String[2];
+        int nameSeparator = path.lastIndexOf('/');
+        result[0] = path.substring(0, nameSeparator);
+        result[1] = path.substring(nameSeparator + 1);
+        return result;
     }
 
     /**

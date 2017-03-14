@@ -6,6 +6,7 @@ import org.apache.sling.api.SlingHttpServletResponse;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -40,7 +41,18 @@ public class ResponseUtil {
         return jsonWriter;
     }
 
+    public static void writeEmptyObject(SlingHttpServletResponse response) throws IOException {
+        response.setStatus(HttpServletResponse.SC_OK);
+        final JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
+        try {
+            jsonWriter.beginObject().endObject();
+        } finally {
+            jsonWriter.close();
+        }
+    }
+
     public static void writeEmptyArray(SlingHttpServletResponse response) throws IOException {
+        response.setStatus(HttpServletResponse.SC_OK);
         final JsonWriter jsonWriter = ResponseUtil.getJsonWriter(response);
         try {
             jsonWriter.beginArray().endArray();
