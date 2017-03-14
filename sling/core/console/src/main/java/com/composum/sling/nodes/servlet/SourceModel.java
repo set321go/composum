@@ -42,7 +42,7 @@ public class SourceModel extends ConsoleSlingBean {
     public static final Map<String, String> NAMESPACES;
 
     static {
-        NAMESPACES = new HashMap<>();
+        NAMESPACES = new HashMap<String, String>();
         NAMESPACES.put("jcr", "http://www.jcp.org/jcr/1.0");
         NAMESPACES.put("nt", "http://www.jcp.org/jcr/nt/1.0");
         NAMESPACES.put("mix", "http://www.jcp.org/jcr/mix/1.0");
@@ -56,7 +56,7 @@ public class SourceModel extends ConsoleSlingBean {
     public static final List<Pattern> EXCLUDED_PROPS;
 
     static {
-        EXCLUDED_PROPS = new ArrayList<>();
+        EXCLUDED_PROPS = new ArrayList<Pattern>();
         EXCLUDED_PROPS.add(Pattern.compile("^jcr:primaryType"));
         EXCLUDED_PROPS.add(Pattern.compile("^jcr:baseVersion"));
         EXCLUDED_PROPS.add(Pattern.compile("^jcr:predecessors"));
@@ -179,7 +179,7 @@ public class SourceModel extends ConsoleSlingBean {
 
     public List<Property> getPropertyList() {
         if (propertyList == null) {
-            propertyList = new ArrayList<>();
+            propertyList = new ArrayList<Property>();
             for (Map.Entry<String, Object> entry : resource.getProperties().entrySet()) {
                 Property property = new Property(entry.getKey(), entry.getValue());
                 if (!isExcluded(property)) {
@@ -206,7 +206,7 @@ public class SourceModel extends ConsoleSlingBean {
 
     public List<Resource> getSubnodeList() {
         if (subnodeList == null) {
-            subnodeList = new ArrayList<>();
+            subnodeList = new ArrayList<Resource>();
             Iterator<Resource> iterator = resource.listChildren();
             while (iterator.hasNext()) {
                 Resource subnode = iterator.next();
@@ -267,7 +267,6 @@ public class SourceModel extends ConsoleSlingBean {
         writeFilter(zipStream);
         writeParents(zipStream, root, resource.getParent());
         writeZip(zipStream, root, true);
-        zipStream.flush();
         zipStream.close();
     }
 
@@ -337,7 +336,6 @@ public class SourceModel extends ConsoleSlingBean {
 
         ZipOutputStream zipStream = new ZipOutputStream(output);
         writeZip(zipStream, resource.getPath(), true);
-        zipStream.flush();
         zipStream.close();
     }
 
@@ -374,8 +372,11 @@ public class SourceModel extends ConsoleSlingBean {
         String path = file.getPath();
         entry = new ZipEntry(getZipName(root, path));
         zipStream.putNextEntry(entry);
-        try (InputStream fileContent = ResourceUtil.getBinaryData(file).getStream()) {
+        InputStream fileContent = ResourceUtil.getBinaryData(file).getStream();
+        try {
             IOUtils.copy(fileContent, zipStream);
+        } finally {
+            fileContent.close();
         }
         zipStream.closeEntry();
     }
@@ -393,7 +394,7 @@ public class SourceModel extends ConsoleSlingBean {
     // XML output
 
     public void writeFile(Writer writer, boolean contentOnly) throws IOException {
-        List<String> namespaces = new ArrayList<>();
+        List<String> namespaces = new ArrayList<String>();
         namespaces.add("jcr");
         determineNamespaces(namespaces, contentOnly);
         Collections.sort(namespaces);

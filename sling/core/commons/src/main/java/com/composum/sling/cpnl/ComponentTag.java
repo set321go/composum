@@ -1,7 +1,8 @@
 package com.composum.sling.cpnl;
 
 import com.composum.sling.core.SlingBean;
-import com.composum.sling.core.BeanContext;
+import org.apache.commons.lang3.StringUtils;
+import org.osgi.framework.InvalidSyntaxException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -238,7 +239,7 @@ public class ComponentTag extends CpnlBodyTagSupport {
      */
     protected Map<String, Object> getReplacedAttributes(int scope) {
         if (replacedAttributes == null) {
-            replacedAttributes = new ArrayList<>();
+            replacedAttributes = new ArrayList<Map<String, Object>>();
         }
         while (replacedAttributes.size() <= scope) {
             replacedAttributes.add(new HashMap<String, Object>());

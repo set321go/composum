@@ -208,13 +208,11 @@ public class TextTag extends CpnlBodyTagSupport {
         Pattern TEXT_FORMAT_STRING = Pattern.compile("\\{([^\\}]+)\\}(.+)$");
         Matcher matcher = TEXT_FORMAT_STRING.matcher(format);
         if (matcher.matches()) {
-            switch (matcher.group(1)) {
-                case "Message":
-                    this.format = new MessageFormat(matcher.group(2));
-                    break;
-                case "Date":
-                    this.format = new SimpleDateFormat(matcher.group(2));
-                    break;
+            String type = matcher.group(1);
+            if ("Message".equalsIgnoreCase(type)) {
+                this.format = new MessageFormat(matcher.group(2));
+            } else if ("Date".equalsIgnoreCase(type)) {
+                this.format = new SimpleDateFormat(matcher.group(2));
             }
         }
     }

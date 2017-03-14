@@ -66,52 +66,48 @@ public class SourceServlet extends SlingSafeMethodsServlet {
                         resource);
 
                 String name = resource.getName();
-                switch (pathInfo.getExtension()) {
+                String ext = pathInfo.getExtension();
 
+                if ("xml".equalsIgnoreCase(ext)) {
                     // a single page or a node in its XML source representation
-                    case "xml":
 
-                        response.setCharacterEncoding("UTF-8");
-                        //response.setContentType("text/xml;charset=UTF-8");
-                        response.setContentType("text/plain;charset=UTF-8"); // best to avoid any conversion by the client
-                        //response.setContentType("application/octet-stream");
-                        response.setHeader("Content-Disposition", "inline; filename=.content.xml");
+                    response.setCharacterEncoding("UTF-8");
+                    //response.setContentType("text/xml;charset=UTF-8");
+                    response.setContentType("text/plain;charset=UTF-8"); // best to avoid any conversion by the client
+                    //response.setContentType("application/octet-stream");
+                    response.setHeader("Content-Disposition", "inline; filename=.content.xml");
 
-                        sourceModel.writeFile(response.getWriter(), false);
-                        break;
+                    sourceModel.writeFile(response.getWriter(), false);
 
+                } else if ("zip".equalsIgnoreCase(ext)) {
                     // a content hierarchy in a zipped structure with '.content.xml' for the content within
-                    case "zip":
 
-                        if (!name.endsWith(".zip")) {
-                            name += ".zip";
-                        }
+                    if (!name.endsWith(".zip")) {
+                        name += ".zip";
+                    }
 
-                        response.setContentType("application/octet-stream");
-                        response.setHeader("Content-Disposition", "inline; filename=" + name);
+                    response.setContentType("application/octet-stream");
+                    response.setHeader("Content-Disposition", "inline; filename=" + name);
 
-                        sourceModel.writeArchive(response.getOutputStream());
-                        break;
+                    sourceModel.writeArchive(response.getOutputStream());
 
+                } else if ("pkg".equalsIgnoreCase(ext)) {
                     // a content hierarchy in a zipped Vault package for installation by the Package Manager
-                    case "pkg":
 
-                        String group = "source";
-                        if (name.endsWith(".zip")) {
-                            name = name.substring(0, name.length() - 4);
-                        }
-                        name += "-source-package";
-                        String version = "current";
+                    String group = "source";
+                    if (name.endsWith(".zip")) {
+                        name = name.substring(0, name.length() - 4);
+                    }
+                    name += "-source-package";
+                    String version = "current";
 
-                        response.setContentType("application/octet-stream");
-                        response.setHeader("Content-Disposition", "inline; filename=" + name + "-" + version + ".zip");
+                    response.setContentType("application/octet-stream");
+                    response.setHeader("Content-Disposition", "inline; filename=" + name + "-" + version + ".zip");
 
-                        sourceModel.writePackage(response.getOutputStream(), group, name, version);
-                        break;
+                    sourceModel.writePackage(response.getOutputStream(), group, name, version);
 
-                    default:
-                        response.sendError(HttpServletResponse.SC_BAD_REQUEST);
-                        break;
+                } else {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST);
                 }
 
             } catch (RepositoryException ex) {

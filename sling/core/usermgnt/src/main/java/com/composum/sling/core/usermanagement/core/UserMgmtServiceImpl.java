@@ -40,7 +40,11 @@ public class UserMgmtServiceImpl implements UserManagementService {
                     // using reflection to create systems users for compatibility to older API versions
                     Method createSystemUser = userManager.getClass().getMethod("createSystemUser", String.class, String.class);
                     user = (User) createSystemUser.invoke(userManager, pathAndName[1], pathAndName[0]);
-                } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ex) {
+                } catch (NoSuchMethodException ex) {
+                    LOG.error(ex.toString());
+                } catch (IllegalAccessException ex) {
+                    LOG.error(ex.toString());
+                } catch (InvocationTargetException ex) {
                     LOG.error(ex.toString());
                 }
             } else {

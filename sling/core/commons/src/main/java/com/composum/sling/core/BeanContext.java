@@ -473,7 +473,7 @@ public interface BeanContext {
         }
 
         public <T> T[] getServices(Class<T> type, String filter) throws InvalidSyntaxException {
-            List<T> services = new ArrayList<>();
+            List<T> services = new ArrayList<T>();
             Collection<ServiceReference<T>> references;
             references = bundleContext.getServiceReferences(type, filter);
             for (ServiceReference<T> reference : references) {

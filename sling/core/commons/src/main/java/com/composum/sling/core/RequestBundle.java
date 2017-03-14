@@ -67,7 +67,7 @@ public class RequestBundle extends ResourceBundle {
 
     protected RequestBundle(SlingHttpServletRequest request) {
         this.request = request;
-        bundles = new ArrayList<>();
+        bundles = new ArrayList<BundleItem>();
         push(null);
     }
 
