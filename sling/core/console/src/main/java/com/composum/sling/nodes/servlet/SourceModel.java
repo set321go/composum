@@ -71,7 +71,7 @@ public class SourceModel extends ConsoleSlingBean {
         //EXCLUDED_PROPS.add(Pattern.compile("^cq:lastRolledout.*"));
     }
 
-    public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
+    public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 
     public class Property implements Comparable<Property> {
 
