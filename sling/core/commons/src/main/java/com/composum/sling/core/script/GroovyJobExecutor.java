@@ -173,6 +173,7 @@ public class GroovyJobExecutor extends AbstractJobExecutor<Object> {
                 return groovyRunner.run(script, variables);
             } finally {
                 Thread.currentThread().setContextClassLoader(tccl);
+                close();
             }
         }
     }
